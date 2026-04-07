@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Portify — Markdown Portfolio Editor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <!-- marked.js for markdown parsing -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+  <style>
+    :root {
+      --bg:        #0d0f12;
+      --surface:   #13161b;
+      --surface2:  #1a1e25;
+      --border:    #252a34;
+      --accent:    #c8f04e;
+      --accent2:   #4ef0c8;
+      --text:      #e8eaf0;
+      --text-muted:#6b7280;
+      --danger:    #f04e6b;
+      --font-ui:   'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-body: 'DM Sans', sans-serif;
+      --bar-h:     52px;
+      --divider-w: 5px;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow: hidden;
+    }
+ 
+    /* ── TOP BAR ── */
+    #topbar {
+      height: var(--bar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      position: relative;
+      z-index: 100;
+    }
+ 
+    #logo {
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    #logo span {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 4px;
+      position: relative;
+    }
+ 
+    #logo span::after {
+      content: '';
+      position: absolute;
+      inset: 4px 4px 4px 7px;
+      border-left: 2px solid var(--bg);
+      border-bottom: 2px solid var(--bg);
+    }
+ 
+    .spacer { flex: 1; }
+ 
+    .topbar-meta {
+      font-family: var(--font-mono);
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+ 
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
+      margin-right: 6px;
+      box-shadow: 0 0 6px var(--accent);
+      animation: pulse 2s ease-in-out infinite;
+    }
+ 
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+ 
+    /* ── WORKSPACE ── */
+    #workspace {
+      display: flex;
+      height: calc(100vh - var(--bar-h));
+      overflow: hidden;
+    }
+ 
+    /* ── EDITOR PANE ── */
+    #editor-pane {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      min-width: 200px;
+      background: var(--surface);
+      overflow: hidden;
+    }
+ 
+    .pane-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border);
+      gap: 10px;
+      flex-shrink: 0;
+    }
+ 
+    .pane-label {
+      font-family: var(--font-ui);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+ 
+    .pane-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+ 
+    .pane-dot.active { background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+ 
+    /* line numbers + editor container */
+    #editor-body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      line-height: 1.75;
+    }
+ 
+    #line-numbers {
+      width: 44px;
+      padding: 14px 0;
+      text-align: right;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+      line-height: 1.75;
+      user-select: none;
+      flex-shrink: 0;
+      overflow: hidden;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding-right: 10px;
+    }
+ 
+    #editor {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.83rem;
+      line-height: 1.75;
+      padding: 14px 18px;
+      caret-color: var(--accent);
+      tab-size: 2;
+      overflow-y: auto;
+      overflow-x: auto;
+      white-space: pre;
+    }
+ 
+    #editor::selection {
+      background: rgba(200, 240, 78, 0.18);
+    }
+ 
+    #editor::-webkit-scrollbar { width: 6px; height: 6px; }
+    #editor::-webkit-scrollbar-track { background: transparent; }
+    #editor::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+ 
+    /* ── DIVIDER ── */
+    #divider {
+      width: var(--divider-w);
+      background: var(--border);
+      cursor: col-resize;
+      flex-shrink: 0;
+      position: relative;
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+ 
+    #divider:hover, #divider.dragging {
+      background: var(--accent);
+    }
+ 
+    #divider::before {
+      content: '⋮';
+      color: var(--bg);
+      font-size: 0.85rem;
+      line-height: 1;
+      letter-spacing: -1px;
+      pointer-events: none;
+    }
+ 
+    /* ── PREVIEW PANE ── */
+    #preview-pane {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 200px;
+      background: var(--surface2);
+      overflow: hidden;
+    }
+ 
+    #preview-header {
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      border-bottom: 1px solid var(--border);
+      gap: 8px;
+      flex-shrink: 0;
+    }
+ 
+    /* ── BUTTONS ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 5px 13px;
+      border-radius: 5px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+ 
+    #btn-preview {
+      background: rgba(200, 240, 78, 0.12);
+      color: var(--accent);
+      border-color: rgba(200, 240, 78, 0.3);
+    }
+ 
+    #btn-preview:hover {
+      background: rgba(200, 240, 78, 0.22);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(200, 240, 78, 0.2);
+    }
+ 
+    #btn-preview:active { transform: scale(0.97); }
+ 
+    #btn-preview svg { transition: transform 0.3s ease; }
+    #btn-preview:hover svg { transform: rotate(180deg); }
+ 
+    #btn-server {
+      background: rgba(78, 240, 200, 0.10);
+      color: var(--accent2);
+      border-color: rgba(78, 240, 200, 0.25);
+    }
+ 
+    #btn-server:hover {
+      background: rgba(78, 240, 200, 0.20);
+      border-color: var(--accent2);
+      box-shadow: 0 0 12px rgba(78, 240, 200, 0.2);
+    }
+ 
+    #btn-server:active { transform: scale(0.97); }
+ 
+    .btn-icon {
+      width: 14px; height: 14px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+ 
+    #preview-header .spacer { flex: 1; }
+ 
+    /* ── PREVIEW CONTENT ── */
+    #preview-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 40px;
+    }
+ 
+    #preview-body::-webkit-scrollbar { width: 6px; }
+    #preview-body::-webkit-scrollbar-track { background: transparent; }
+    #preview-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+ 
+    /* ── MARKDOWN RENDERED STYLES ── */
+    #preview-content {
+      max-width: 740px;
+      margin: 0 auto;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      line-height: 1.8;
+      color: #d1d5db;
+    }
+ 
+    #preview-content h1 {
+      font-family: var(--font-ui);
+      font-size: 2.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      margin-bottom: 10px;
+      padding-bottom: 14px;
+      border-bottom: 2px solid var(--border);
+    }
+ 
+    #preview-content h2 {
+      font-family: var(--font-ui);
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-top: 36px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+ 
+    #preview-content h2::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 1em;
+      background: var(--accent);
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+ 
+    #preview-content h3 {
+      font-family: var(--font-ui);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+ 
+    #preview-content p { margin-bottom: 14px; }
+ 
+    #preview-content a {
+      color: var(--accent2);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(78, 240, 200, 0.3);
+      transition: border-color 0.15s;
+    }
+ 
+    #preview-content a:hover { border-color: var(--accent2); }
+ 
+    #preview-content code {
+      font-family: var(--font-mono);
+      font-size: 0.82em;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: var(--accent);
+    }
+ 
+    #preview-content pre {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 20px;
+      overflow-x: auto;
+      margin: 18px 0;
+    }
+ 
+    #preview-content pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #a8b4d0;
+      font-size: 0.83rem;
+    }
+ 
+    #preview-content blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 10px 20px;
+      margin: 18px 0;
+      background: rgba(200, 240, 78, 0.05);
+      border-radius: 0 6px 6px 0;
+      color: #9ca3af;
+      font-style: italic;
+    }
+ 
+    #preview-content ul, #preview-content ol {
+      padding-left: 24px;
+      margin-bottom: 14px;
+    }
+ 
+    #preview-content li { margin-bottom: 4px; }
+ 
+    #preview-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 0.88rem;
+    }
+ 
+    #preview-content th {
+      background: var(--surface);
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 14px;
+      text-align: left;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+    }
+ 
+    #preview-content td {
+      padding: 9px 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+ 
+    #preview-content tr:hover td { background: rgba(255,255,255,0.02); }
+ 
+    #preview-content img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+ 
+    #preview-content hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 28px 0;
+    }
+ 
+    /* ── EMPTY STATE ── */
+    #empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 12px;
+      color: var(--text-muted);
+      text-align: center;
+    }
+ 
+    #empty-state svg { opacity: 0.25; }
+    #empty-state p { font-family: var(--font-mono); font-size: 0.78rem; }
+ 
+    /* ── FLASH ANIMATION on refresh ── */
+    @keyframes flash {
+      0%   { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+ 
+    .refreshed { animation: flash 0.25s ease-out; }
+ 
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(60px);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      padding: 8px 18px;
+      border-radius: 6px;
+      transition: transform 0.25s cubic-bezier(.16,1,.3,1);
+      z-index: 999;
+      pointer-events: none;
+    }
+ 
+    #toast.show { transform: translateX(-50%) translateY(0); }
+ 
+    /* ── WORD COUNT ── */
+    #wordcount {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-left: auto;
+      padding-right: 4px;
+    }
+  </style>
+</head>
+<body>
+ 
+<!-- TOP BAR -->
+<div id="topbar">
+  <div id="logo">
+    <span></span>
+    Portify
+  </div>
+  <div class="topbar-meta">Markdown Portfolio Editor</div>
+  <div class="spacer"></div>
+  <div class="topbar-meta"><span class="status-dot"></span>Ready</div>
+</div>
+ 
+<!-- WORKSPACE -->
+<div id="workspace">
+ 
+  <!-- EDITOR PANE -->
+  <div id="editor-pane">
+    <div class="pane-header">
+      <div class="pane-dot active"></div>
+      <span class="pane-label">Editor</span>
+      <span id="wordcount">0 words</span>
+    </div>
+    <div id="editor-body">
+      <div id="line-numbers"></div>
+      <textarea id="editor" spellcheck="false" placeholder="# Start writing your portfolio..."></textarea>
+    </div>
+  </div>
+ 
+  <!-- RESIZE DIVIDER -->
+  <div id="divider"></div>
+ 
+  <!-- PREVIEW PANE -->
+  <div id="preview-pane">
+    <div id="preview-header">
+      <div class="pane-dot"></div>
+      <span class="pane-label">Preview</span>
+      <div class="spacer"></div>
+ 
+      <!-- PREVIEW BUTTON -->
+      <button class="btn" id="btn-preview" title="Refresh Preview">
+        <span class="btn-icon">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M1 7A6 6 0 1 0 7 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            <path d="M1 1v6h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+        Preview
+      </button>
+ 
+      <!-- SERVER BUTTON -->
+      <button class="btn" id="btn-server" title="Launch Portfolio Server">
+        <span class="btn-icon">
+          <svg width="13" height="13" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="12" height="5" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <rect x="1" y="8" width="12" height="5" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <circle cx="11.5" cy="3.5" r="1" fill="currentColor"/>
+            <circle cx="11.5" cy="10.5" r="1" fill="currentColor"/>
+          </svg>
+        </span>
+        Server
+      </button>
+    </div>
+ 
+    <div id="preview-body">
+      <div id="preview-content"></div>
+      <div id="empty-state" style="display:none">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="6" width="36" height="36" rx="6" stroke="currentColor" stroke-width="2"/>
+          <path d="M14 18h20M14 24h14M14 30h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <p>Your preview will appear here.<br>Hit Preview or start typing.</p>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<!-- TOAST -->
+<div id="toast"></div>
+ 
+<script>
+  // ─── ELEMENTS ───────────────────────────────
+  const editor       = document.getElementById('editor');
+  const previewBody  = document.getElementById('preview-body');
+  const previewContent = document.getElementById('preview-content');
+  const emptyState   = document.getElementById('empty-state');
+  const lineNumbers  = document.getElementById('line-numbers');
+  const wordcountEl  = document.getElementById('wordcount');
+  const divider      = document.getElementById('divider');
+  const editorPane   = document.getElementById('editor-pane');
+  const workspace    = document.getElementById('workspace');
+  const btnPreview   = document.getElementById('btn-preview');
+  const btnServer    = document.getElementById('btn-server');
+  const toast        = document.getElementById('toast');
+ 
+  // ─── DEFAULT CONTENT ────────────────────────
+  const defaultMD = `# Jane Doe
+**Full-Stack Developer & Open Source Enthusiast**
+ 
+---
+ 
+## About Me
+ 
+I build things for the web. Passionate about clean code, great UX, and systems that scale. Currently based in Karachi, Pakistan.
+ 
+## Skills
+ 
+- **Languages**: JavaScript, Python, C++, TypeScript
+- **Frameworks**: React, Node.js, Django, Spring Boot
+- **Tools**: Git, Docker, PostgreSQL, Figma
+ 
+## Projects
+ 
+### Portify
+> A markdown-to-portfolio generator built for the OOP course.
+ 
+Transforms plain \`.md\` files into beautiful personal portfolio websites using object-oriented design patterns.
+ 
+\`\`\`bash
+$ portify build --input portfolio.md --theme dark
+\`\`\`
+ 
+### Other Work
+| Project | Stack | Status |
+|---------|-------|--------|
+| DataViz Dashboard | React + D3 | Live |
+| REST API Boilerplate | Node.js | Open Source |
+| CLI Task Manager | Python | In Progress |
+ 
+## Contact
+ 
+- **Email**: jane@example.com
+- **GitHub**: [github.com/janedoe](https://github.com)
+- **LinkedIn**: [linkedin.com/in/janedoe](https://linkedin.com)
+`;
+ 
+  // ─── INIT ────────────────────────────────────
+  editor.value = defaultMD;
+  renderPreview();
+  updateLineNumbers();
+  updateWordCount();
+ 
+  // ─── RENDER PREVIEW ─────────────────────────
+  function renderPreview() {
+    const md = editor.value.trim();
+    if (!md) {
+      previewContent.innerHTML = '';
+      emptyState.style.display = 'flex';
+      return;
+    }
+    emptyState.style.display = 'none';
+    previewContent.innerHTML = marked.parse(md);
+    previewContent.classList.remove('refreshed');
+    void previewContent.offsetWidth; // force reflow
+    previewContent.classList.add('refreshed');
+  }
+ 
+  // ─── LINE NUMBERS ────────────────────────────
+  function updateLineNumbers() {
+    const lines = editor.value.split('\n').length;
+    let html = '';
+    for (let i = 1; i <= lines; i++) html += i + '\n';
+    lineNumbers.textContent = html;
+    // sync scroll
+    lineNumbers.scrollTop = editor.scrollTop;
+  }
+ 
+  editor.addEventListener('input', () => {
+    updateLineNumbers();
+    updateWordCount();
+  });
+ 
+  editor.addEventListener('scroll', () => {
+    lineNumbers.scrollTop = editor.scrollTop;
+  });
+ 
+  // ─── WORD COUNT ──────────────────────────────
+  function updateWordCount() {
+    const words = editor.value.trim().split(/\s+/).filter(Boolean).length;
+    wordcountEl.textContent = words + ' word' + (words !== 1 ? 's' : '');
+  }
+ 
+  // ─── TAB KEY ─────────────────────────────────
+  editor.addEventListener('keydown', e => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const s = editor.selectionStart;
+      const val = editor.value;
+      editor.value = val.slice(0, s) + '  ' + val.slice(editor.selectionEnd);
+      editor.selectionStart = editor.selectionEnd = s + 2;
+      updateLineNumbers();
+    }
+  });
+ 
+  // ─── BUTTONS ─────────────────────────────────
+  btnPreview.addEventListener('click', () => {
+    renderPreview();
+    showToast('Preview refreshed');
+  });
+ 
+  btnServer.addEventListener('click', () => {
+    showToast('Launching server… (backend not connected)');
+    // TODO: wire up to your backend
+  });
+ 
+  // ─── TOAST ───────────────────────────────────
+  let toastTimer;
+  function showToast(msg) {
+    toast.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
+  }
+ 
+  // ─── DIVIDER DRAG ────────────────────────────
+  let dragging = false;
+ 
+  divider.addEventListener('mousedown', e => {
+    dragging = true;
+    divider.classList.add('dragging');
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  });
+ 
+  document.addEventListener('mousemove', e => {
+    if (!dragging) return;
+    const wsRect = workspace.getBoundingClientRect();
+    const divW   = 5;
+    let newEditorW = e.clientX - wsRect.left;
+    const totalW = wsRect.width - divW;
+    const minW   = 200;
+    newEditorW = Math.max(minW, Math.min(totalW - minW, newEditorW));
+    editorPane.style.width = newEditorW + 'px';
+    editorPane.style.flex  = 'none';
+  });
+ 
+  document.addEventListener('mouseup', () => {
+    if (!dragging) return;
+    dragging = false;
+    divider.classList.remove('dragging');
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+  });
+ 
+  // ─── AUTO PREVIEW on Ctrl+Enter ──────────────
+  editor.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+      e.preventDefault();
+      renderPreview();
+      showToast('Preview refreshed  ⌘↵');
+    }
+  });
+</script>
+</body>
+</html>
