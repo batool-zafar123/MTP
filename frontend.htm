@@ -157,6 +157,9 @@
     }
  
     #line-numbers {
+      white-space: pre;
+      overflow-y: hidden;
+      display: block;
       width: 44px;
       padding: 14px 0;
       text-align: right;
@@ -560,7 +563,7 @@
             <path d="M1 1v6h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
-        Preview
+        Run
       </button>
  
       <!-- SERVER BUTTON -->
@@ -573,7 +576,7 @@
             <circle cx="11.5" cy="10.5" r="1" fill="currentColor"/>
           </svg>
         </span>
-        Server
+        Generate
       </button>
     </div>
  
@@ -674,8 +677,7 @@ $ portify build --input portfolio.md --theme dark
   function updateLineNumbers() {
     const lines = editor.value.split('\n').length;
     let html = '';
-    for (let i = 1; i <= lines; i++) html += i + '\n';
-    lineNumbers.textContent = html;
+    lineNumbers.innerText = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
     // sync scroll
     lineNumbers.scrollTop = editor.scrollTop;
   }
@@ -709,23 +711,40 @@ $ portify build --input portfolio.md --theme dark
  
   // ─── BUTTONS ─────────────────────────────────
   btnPreview.addEventListener('click', () => {
-    renderPreview();
-    showToast('Preview refreshed');
+      renderPreview();
+      showToast('Preview refreshed', 6000);  // disappears in 2 seconds
   });
- 
   btnServer.addEventListener('click', () => {
-    showToast('Launching server… (backend not connected)');
-    // TODO: wire up to your backend
+      const markdown = editor.value;
+
+      showToast('Generating...', 60000);  // keep it visible until replaced
+
+      fetch('http://localhost:8000/generate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ markdown })
+      })
+      .then(response => {
+          if (!response.ok) throw new Error();
+          showToast('Portfolio generated successfully!', 6000);  // now lasts full 6 seconds
+      })
+      .catch(() => {
+          showToast('Cannot reach server — is server.py running?', 6000);
+      });
   });
- 
+  
   // ─── TOAST ───────────────────────────────────
   let toastTimer;
-  function showToast(msg) {
+  function showToast(msg, duration = 3000) {
+    clearTimeout(toastTimer); // move this FIRST
+
     toast.textContent = msg;
     toast.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
-  }
+
+    toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+    }, duration);
+}
  
   // ─── DIVIDER DRAG ────────────────────────────
   let dragging = false;
