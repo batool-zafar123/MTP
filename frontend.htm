@@ -597,20 +597,20 @@
 <div id="toast"></div>
  
 <script>
+window.addEventListener('DOMContentLoaded', () => {
   // ─── ELEMENTS ───────────────────────────────
-  const editor       = document.getElementById('editor');
-  const previewBody  = document.getElementById('preview-body');
+  const editor        = document.getElementById('editor');
   const previewContent = document.getElementById('preview-content');
-  const emptyState   = document.getElementById('empty-state');
-  const lineNumbers  = document.getElementById('line-numbers');
-  const wordcountEl  = document.getElementById('wordcount');
-  const divider      = document.getElementById('divider');
-  const editorPane   = document.getElementById('editor-pane');
-  const workspace    = document.getElementById('workspace');
-  const btnPreview   = document.getElementById('btn-preview');
-  const btnServer    = document.getElementById('btn-server');
-  const toast        = document.getElementById('toast');
- 
+  const emptyState    = document.getElementById('empty-state');
+  const lineNumbers   = document.getElementById('line-numbers');
+  const wordcountEl   = document.getElementById('wordcount');
+  const divider       = document.getElementById('divider');
+  const workspace     = document.getElementById('workspace');
+  const btnPreview    = document.getElementById('btn-preview');
+  const btnServer     = document.getElementById('btn-server');
+  const toast         = document.getElementById('toast');
+  const previewDot    = document.querySelector('#preview-header .pane-dot');
+
   // ─── DEFAULT CONTENT ────────────────────────
   const defaultMD = `# Jane Doe
 **Full-Stack Developer & Open Source Enthusiast**
@@ -652,138 +652,124 @@ $ portify build --input portfolio.md --theme dark
 - **LinkedIn**: [linkedin.com/in/janedoe](https://linkedin.com)
 `;
  
-  // ─── INIT ────────────────────────────────────
+  // ─── INIT ───────────────────────────────────
   editor.value = defaultMD;
   renderPreview();
   updateLineNumbers();
   updateWordCount();
- 
+
   // ─── RENDER PREVIEW ─────────────────────────
   function renderPreview() {
     const md = editor.value.trim();
+
     if (!md) {
       previewContent.innerHTML = '';
       emptyState.style.display = 'flex';
+      previewDot.classList.remove('active'); // turn dot OFF
       return;
     }
+
     emptyState.style.display = 'none';
     previewContent.innerHTML = marked.parse(md);
+    previewDot.classList.add('active'); // turn dot ON
+
+    // flash animation
     previewContent.classList.remove('refreshed');
     void previewContent.offsetWidth; // force reflow
     previewContent.classList.add('refreshed');
   }
- 
-  // ─── LINE NUMBERS ────────────────────────────
+
+  // ─── LINE NUMBERS ───────────────────────────
   function updateLineNumbers() {
     const lines = editor.value.split('\n').length;
-    let html = '';
-    lineNumbers.innerText = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
-    // sync scroll
+    lineNumbers.textContent = Array.from({length: lines}, (_, i) => i + 1).join('\n');
     lineNumbers.scrollTop = editor.scrollTop;
   }
- 
+
   editor.addEventListener('input', () => {
     updateLineNumbers();
     updateWordCount();
+    previewDot.classList.remove('active'); // editing = preview outdated
   });
- 
+
   editor.addEventListener('scroll', () => {
     lineNumbers.scrollTop = editor.scrollTop;
   });
- 
-  // ─── WORD COUNT ──────────────────────────────
+
+  // ─── WORD COUNT ─────────────────────────────
   function updateWordCount() {
     const words = editor.value.trim().split(/\s+/).filter(Boolean).length;
     wordcountEl.textContent = words + ' word' + (words !== 1 ? 's' : '');
   }
- 
-  // ─── TAB KEY ─────────────────────────────────
+
+  // ─── TAB KEY SUPPORT ────────────────────────
   editor.addEventListener('keydown', e => {
     if (e.key === 'Tab') {
       e.preventDefault();
       const s = editor.selectionStart;
-      const val = editor.value;
-      editor.value = val.slice(0, s) + '  ' + val.slice(editor.selectionEnd);
+      editor.value = editor.value.slice(0, s) + '  ' + editor.value.slice(editor.selectionEnd);
       editor.selectionStart = editor.selectionEnd = s + 2;
       updateLineNumbers();
     }
   });
- 
-  // ─── BUTTONS ─────────────────────────────────
+
+  // ─── BUTTONS ────────────────────────────────
   btnPreview.addEventListener('click', () => {
-      renderPreview();
-      showToast('Preview refreshed', 2000);  // disappears in 2 seconds
+    renderPreview();
+    showToast('Preview refreshed', 2000);
   });
+
   btnServer.addEventListener('click', () => {
-      const markdown = editor.value;
+    const markdown = editor.value;
+    showToast('Generating...', 2000);
 
-      showToast('Generating...', 2000);  // keep it visible until replaced
-
-      fetch('http://localhost:8000/generate', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ markdown })
-      })
-      .then(response => {
-          if (!response.ok) throw new Error();
-          showToast('Portfolio generated successfully!', 2000);  // now lasts full 6 seconds
-      })
-      .catch(() => {
-          showToast('Cannot reach server — is server.py running?', 2000);
-      });
+    fetch('http://localhost:8000/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ markdown })
+    })
+    .then(response => {
+      if (!response.ok) throw new Error();
+      showToast('Portfolio generated successfully!', 3000);
+    })
+    .catch(() => {
+      showToast('Cannot reach server — is server.py running?', 3000);
+    });
   });
-  
-  // ─── TOAST ───────────────────────────────────
-  let toastTimer;
-  function showToast(msg, duration = 2000) {
-    clearTimeout(toastTimer); // move this FIRST
 
+  // ─── TOAST ──────────────────────────────────
+  let toastTimer;
+  function showToast(msg, duration = 3000) {
     toast.textContent = msg;
     toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), duration);
+  }
 
-    toastTimer = setTimeout(() => {
-        toast.classList.remove('show');
-    }, duration);
-}
- 
-  // ─── DIVIDER DRAG ────────────────────────────
+  // ─── DIVIDER DRAG ──────────────────────────
   let dragging = false;
- 
+
   divider.addEventListener('mousedown', e => {
     dragging = true;
     divider.classList.add('dragging');
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
   });
- 
+
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
     const wsRect = workspace.getBoundingClientRect();
-    const divW   = 5;
-    let newEditorW = e.clientX - wsRect.left;
-    const totalW = wsRect.width - divW;
-    const minW   = 200;
-    newEditorW = Math.max(minW, Math.min(totalW - minW, newEditorW));
-    editorPane.style.width = newEditorW + 'px';
-    editorPane.style.flex  = 'none';
+    const newEditorW = Math.max(200, Math.min(wsRect.width - 200, e.clientX - wsRect.left));
+    editor.parentElement.style.width = newEditorW + 'px';
   });
- 
-  document.addEventListener('mouseup', () => {
-    if (!dragging) return;
+
+  document.addEventListener('mouseup', e => {
     dragging = false;
     divider.classList.remove('dragging');
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
   });
- 
-  // ─── AUTO PREVIEW on Ctrl+Enter ──────────────
-  editor.addEventListener('keydown', e => {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      renderPreview();
-      showToast('Preview refreshed  ⌘↵');
-    }
-  });
+});
 </script>
 </body>
 </html>
