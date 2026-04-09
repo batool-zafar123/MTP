@@ -415,6 +415,7 @@
 <div id="toast"></div>
  
 <script>
+window.addEventListener('DOMContentLoaded', () => {
   // ─── ELEMENTS ───────────────────────────────
   const editor       = document.getElementById('editor');
   const lineNumbers  = document.getElementById('line-numbers');
@@ -424,6 +425,7 @@
   const workspace    = document.getElementById('workspace');
   const btnServer    = document.getElementById('btn-server');
   const previewIframe = document.getElementById('preview-iframe');
+  const previewDot   = document.querySelector('#preview-pane .pane-dot');
   const toast        = document.getElementById('toast');
  
   // ─── DEFAULT CONTENT ────────────────────────
@@ -447,7 +449,7 @@ I build things for the web. Passionate about clean code, great UX, and systems t
 ### Portify
 > A markdown-to-portfolio generator built for the OOP course.
  
-Transforms plain \`.md\` files into beautiful personal portfolio websites using object-oriented design patterns.
+Transforms plain \\.md\` files into beautiful personal portfolio websites using object-oriented design patterns.
  
 \`\`\`bash
 $ portify build --input portfolio.md --theme dark
@@ -467,7 +469,7 @@ $ portify build --input portfolio.md --theme dark
 - **LinkedIn**: [linkedin.com/in/janedoe](https://linkedin.com)
 `;
  
-  // ─── INIT ────────────────────────────────────
+  // ─── INIT ───────────────────────────────────
   editor.value = defaultMD;
   updateLineNumbers();
   updateWordCount();
@@ -478,29 +480,30 @@ $ portify build --input portfolio.md --theme dark
     lineNumbers.innerText = Array.from({ length: lines }, (_, i) => i + 1).join('\n');
     lineNumbers.scrollTop = editor.scrollTop;
   }
- 
+
   editor.addEventListener('input', () => {
     updateLineNumbers();
     updateWordCount();
+    // Optional: mark preview as outdated
+    previewDot.classList.remove('active');
   });
- 
+
   editor.addEventListener('scroll', () => {
     lineNumbers.scrollTop = editor.scrollTop;
   });
- 
-  // ─── WORD COUNT ──────────────────────────────
+
+  // ─── WORD COUNT ─────────────────────────────
   function updateWordCount() {
     const words = editor.value.trim().split(/\s+/).filter(Boolean).length;
     wordcountEl.textContent = words + ' word' + (words !== 1 ? 's' : '');
   }
- 
-  // ─── TAB KEY ─────────────────────────────────
+
+  // ─── TAB KEY SUPPORT ────────────────────────
   editor.addEventListener('keydown', e => {
     if (e.key === 'Tab') {
       e.preventDefault();
       const s = editor.selectionStart;
-      const val = editor.value;
-      editor.value = val.slice(0, s) + '  ' + val.slice(editor.selectionEnd);
+      editor.value = editor.value.slice(0, s) + '  ' + editor.value.slice(editor.selectionEnd);
       editor.selectionStart = editor.selectionEnd = s + 2;
       updateLineNumbers();
     }
@@ -558,7 +561,7 @@ $ portify build --input portfolio.md --theme dark
     .then(data => {
       if (data.status === 'success') {
         showToast('✓ Preview updated', 2000);
-        // Add timestamp to bypass cache
+        previewDot.classList.add('active'); // mark as current
         const timestamp = new Date().getTime();
         previewIframe.src = `http://localhost:8000/output/index.html?t=${timestamp}`;
       } else {
@@ -617,33 +620,29 @@ $ portify build --input portfolio.md --theme dark
  
   // ─── DIVIDER DRAG ────────────────────────────
   let dragging = false;
- 
+
   divider.addEventListener('mousedown', e => {
     dragging = true;
     divider.classList.add('dragging');
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
   });
- 
+
   document.addEventListener('mousemove', e => {
     if (!dragging) return;
     const wsRect = workspace.getBoundingClientRect();
-    const divW   = 5;
-    let newEditorW = e.clientX - wsRect.left;
-    const totalW = wsRect.width - divW;
-    const minW   = 200;
-    newEditorW = Math.max(minW, Math.min(totalW - minW, newEditorW));
+    const newEditorW = Math.max(200, Math.min(wsRect.width - 200, e.clientX - wsRect.left));
     editorPane.style.width = newEditorW + 'px';
-    editorPane.style.flex  = 'none';
+    editorPane.style.flex = 'none';
   });
- 
-  document.addEventListener('mouseup', () => {
-    if (!dragging) return;
+
+  document.addEventListener('mouseup', e => {
     dragging = false;
     divider.classList.remove('dragging');
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
   });
+});
 </script>
 </body>
 </html>
