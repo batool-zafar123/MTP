@@ -21,12 +21,12 @@ def handle_generation():
     markdown_text = data['markdown']
     
     # Save markdown to input.md
-    with open('input.md', 'w') as file:
+    with open('input.md', 'w', encoding='utf-8') as file:
         file.write(markdown_text)
     
     # Run your C++ program
     try:
-        subprocess.run(['./main.exe'], check=True)
+        subprocess.run(['./backend/main.exe'], check=True)
         
         return {"status": "success", "message": "Portfolio generated!"}, 200
     except FileNotFoundError:
