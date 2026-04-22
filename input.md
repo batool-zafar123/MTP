@@ -5,7 +5,7 @@
 
 # PROFILE
 
-Name: [Your Full Name]<br>
+Name: [Muhammad Hashim]<br>
 Title: [Your Professional Title, e.g., Software Engineer]<br>
 Bio: [Write a short introduction about yourself, your background, and your goals.]<br>
 

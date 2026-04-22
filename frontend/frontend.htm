@@ -629,6 +629,9 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
     divider.classList.add('dragging');
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
+    
+    // Prevent the iframe from swallowing mouse events
+    previewIframe.style.pointerEvents = 'none';
   });
 
   document.addEventListener('mousemove', e => {
@@ -644,6 +647,9 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
     divider.classList.remove('dragging');
     document.body.style.cursor = '';
     document.body.style.userSelect = '';
+    
+    // Restore iframe interaction
+    previewIframe.style.pointerEvents = '';
   });
 });
 </script>
