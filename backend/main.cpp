@@ -34,13 +34,6 @@ class Portfolio{
             return content;
         }
 
-        void replaceAll(string &data, string key, string value){
-            size_t pos = 0;
-            while((pos = data.find(key, pos)) != string::npos){
-                data.replace(pos, key.length(), value);
-                pos += value.length();
-            }
-        }
 };
 
 class Profile : public Portfolio{
@@ -300,7 +293,6 @@ class Contact: public Portfolio{
 
 
 int main() {
-    cout << "kwehfkrh";
     Profile p;
     cout << p.details[0] << endl;
     p.html = p.Replacement();
