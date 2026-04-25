@@ -26,6 +26,7 @@ def handle_generation():
     
     # Run your C++ program
     try:
+        # subprocess.run(['.main.exe'], check=True)
         subprocess.run(['./backend/main.exe'], check=True)
         
         return {"status": "success", "message": "Portfolio generated!"}, 200
