@@ -26,12 +26,16 @@ def handle_generation():
     
     # Run your C++ program
     try:
-        # subprocess.run(['.main.exe'], check=True)
         subprocess.run(['./backend/main.exe'], check=True)
         
         return {"status": "success", "message": "Portfolio generated!"}, 200
     except FileNotFoundError:
         return {"status": "error", "message": "C++ program not found"}, 500
+    except subprocess.CalledProcessError:
+        return {
+            "status": "error", 
+            "message": "C++ program is saying that the structure of md is disturbed. Try reloading..."
+        }, 500
     except Exception as e:
         return {"status": "error", "message": str(e)}, 500
 

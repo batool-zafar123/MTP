@@ -434,6 +434,7 @@ window.addEventListener('DOMContentLoaded', () => {
     - Edit the text in just the square brackets.
     - For links, paste the url in the round brackets.
     - To add more projects, just copy paste the 5 lines.
+    - If you can't see your desired output, try reloading the website or check the structure of md.
  -->
 
 # PROFILE
@@ -442,7 +443,7 @@ Name: [Your Full Name]<br>
 Title: [Your Professional Title, e.g., Software Engineer]<br>
 Bio: [Write a short introduction about yourself, your background, and your goals.]<br>
 
-> "[Insert a personal quote, philosophy, or objective statement. By Mr Socrates...]"
+> "[Insert a personal quote, philosophy, or objective statement.]"
 
 # SKILLS
 * Languages: [List your programming languages, e.g., C++, Java, Python]
@@ -509,37 +510,6 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
       updateLineNumbers();
     }
   });
- 
-  // // ─── GENERATE BUTTON ─────────────────────────
-  // btnServer.addEventListener('click', () => {
-  //   const markdown = editor.value;
-    
-  //   showToast('Generating...', 2000);
-    
-  //   fetch('http://localhost:8000/generate', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({ markdown })
-  //   })
-  //   .then(response => {
-  //     if (!response.ok) throw new Error('Server returned ' + response.status);
-  //     return response.json();
-  //   })
-  //   .then(data => {
-  //     if (data.status === 'success') {
-  //       showToast('✓ Portfolio generated!', 2000);
-  //       // Add timestamp to bypass cache
-  //       const timestamp = new Date().getTime();
-  //       previewIframe.src = `http://localhost:8000/output/index.html?t=${timestamp}`;
-  //     } else {
-  //       showToast('✗ ' + (data.message || 'Generation failed'), 2000);
-  //     }
-  //   })
-  //   .catch(err => {
-  //     showToast('✗ Cannot reach server — is server.py running?', 2000);
-  //     console.error('Fetch error:', err);
-  //   });
-  // });
 
     // ─── RUN BUTTON ──────────────────────────────
   const btnRun = document.getElementById('btn-run');

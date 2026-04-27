@@ -19,7 +19,18 @@ class Portfolio{
 
         Portfolio(){
             fstream inputFile = Portfolio::openFile("input.md", ios :: in);
-            input = Portfolio :: readContent(inputFile);
+            input = Portfolio::readContent(inputFile);
+
+            // Checking the basic layout of md
+            if (
+                input.find("# PROFILE") == string::npos ||
+                input.find("# SKILLS") == string::npos ||
+                input.find("# PROJECTS") == string::npos || 
+                input.find("# CONTACT") == string::npos
+            ) {
+                    cout << "Error: Basic layout of md is corrupted.../n";
+                    exit(1); // Give error to the website
+                }
            
             fstream htmlFile = Portfolio::openFile("templates/template.html", ios::in);
             html = Portfolio::readContent(htmlFile);
@@ -52,6 +63,12 @@ class Profile : public Portfolio{
 
             start = end + 1;
             if(i > 3) break;
+        }
+
+        // Checking if user gave 4 profile details in the intro section
+        if (i < 4) {
+            cout << "Error: Less than 4 profile details found...\n";
+            exit(1);
         }
         
         string result;
@@ -106,6 +123,13 @@ class Skills : public Portfolio{
             start = end + 1;
             if(i >= 3) break;
         }
+
+        // Checking if user gave 3 profile details in the skills section
+        if (i < 3) {
+            cout << "Error: Less than 3 skills found...\n";
+            exit(1);
+        }
+
         string skills;
         if(i >= 3)
         {
@@ -159,7 +183,6 @@ class Projects : public Portfolio{
         vector<string> title;
         vector<string> description;
         vector<string> tech;
-        vector<string> linkText;
         vector<string> links;
         while((start = input.find("[Project Title", start)) != string :: npos){
             start += 1;
@@ -168,7 +191,7 @@ class Projects : public Portfolio{
             start = input.find("Title", start);
             if (start == string::npos) break;
             start += 16;
-            int end = input.find(']', start);
+            end = input.find(']', start);
             if (end == string::npos) break;
             title.push_back(input.substr(start + 1, end - start - 1));
 
@@ -192,6 +215,15 @@ class Projects : public Portfolio{
             if (end == string::npos) break;
             links.push_back(input.substr(start + 1, end - start - 1));
                 
+        }
+
+        // Checking if the elements in each project section are complete
+        if (title.size() != total_projects || 
+            description.size() != total_projects || 
+            tech.size() != total_projects || 
+            links.size() != total_projects) {
+            cout << "Error: Elements missing in projects section...\n";
+            exit(1);
         }
 
         string projects = "";
@@ -255,6 +287,12 @@ class Contact: public Portfolio{
 
             start = end + 1;
             if(i >= 3) break;
+        }
+
+        // Checking if user gave 3 links in the contacts section
+        if (i < 3) {
+            cout << "Error: Less than 3 links found...\n";
+            exit(1);
         }
 
         string contacts;
