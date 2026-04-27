@@ -8,7 +8,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return send_file('index.html')
+    return send_file('frontend/frontend.htm')
 
 @app.route('/output/<path:filename>')
 def serve_output(filename):

@@ -3,11 +3,11 @@
 #include <vector>
 using namespace std;
 
-class Portfolio{
+class Portfolio{       
     public:
-        string html;
-        string input;
-        static int start;
+        string html; // string of frontend.html
+        string input; // string of input.md
+        static int start;  // start and end to locate the substrings.
         static int end;
         fstream openFile(string path, ios::openmode mode){
             fstream file(path, mode);
@@ -38,7 +38,7 @@ class Portfolio{
 
 class Profile : public Portfolio{
     public:
-    string details[4]; // array for input blocks from input.md
+    string details[4]; // array for name, title, bio and quote
 
     string Replacement() {
         start = 0;
@@ -96,8 +96,8 @@ class Skills : public Portfolio{
     string details[3];
     int i = 0;
     string addSkills(){
-        start = input.find("Languages", start);
         string category[3] = {"Languages", "Tools", "Concepts"};
+        start = input.find("Languages", start); //finds Languages but returns the index of L
         while((start = input.find('[', start)) != string::npos){
             end = input.find(']', start);
             if(end == string::npos) break;
@@ -136,7 +136,7 @@ class Skills : public Portfolio{
         for (int j = 0; j < html.size(); ++j) {
         if (html[j] == '[' && html.compare(j, 16, "[SKILLS_CONTENT]") == 0) {
             result += skills; // Add the generated HTML
-            j += 15;            // Skip the tag "[CONTACT_CONTENT]"
+            j += 15;            // Skip the tag "[SKILLS_CONTENT]"
         } 
         else {
             result += html[j];  // Just copy regular characters
