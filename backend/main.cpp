@@ -51,7 +51,7 @@ class Profile : public Portfolio{
     public:
     string details[4]; // array for name, title, bio and quote
 
-    string Replacement() {
+    string parsing() {
         start = 0;
 
         int i = 0;
@@ -112,7 +112,7 @@ class Skills : public Portfolio{
     public:
     string details[3];
     int i = 0;
-    string addSkills(){
+    string parsing(){
         string category[3] = {"Languages", "Tools", "Concepts"};
         start = input.find("Languages", start); //finds Languages but returns the index of L
         while((start = input.find('[', start)) != string::npos){
@@ -177,7 +177,7 @@ class Projects : public Portfolio{
     public:
     int total_projects;
 
-    string addProjects(){
+    string parsing(){
         total_projects = 0;
         int i = 0;
         vector<string> title;
@@ -274,7 +274,7 @@ class Contact: public Portfolio{
 
     public:
 
-    string contactDetails(){
+    string parsing(){
         int i = 0;
         string links[3];
         start = 0;
@@ -333,16 +333,16 @@ class Contact: public Portfolio{
 int main() {
     Profile p;
     cout << p.details[0] << endl;
-    p.html = p.Replacement();
+    p.html = p.parsing();
     Skills s;
     s.html = p.html;
-    s.html = s.addSkills();
+    s.html = s.parsing();
     Projects pj;
     pj.html = s.html;
-    pj.html = pj.addProjects();
+    pj.html = pj.parsing();
     Contact c;
     c.html = pj.html;
-    c.html = c.contactDetails();
+    c.html = c.parsing();
     ofstream indexFile("output/index.html");
     indexFile << c.html;
     return 0;
