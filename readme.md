@@ -46,9 +46,7 @@ This is the core processing unit of Portify.
 * Generate a complete index.html file
 * Given flowchart explains the working flow of engine:
 
-<br>
-
-![Flow of engine](Report\Code_flow.png)
+![Flow of engine](Report/Code_flow.png)
 
 ## Features
 
@@ -99,15 +97,21 @@ Detects invalid Markdown structure and engine failures, and notifies the user
 
 **1-** Download the project files
 
-**2-** Run python server.py
+**2-** Compile main.cpp
+
+     cd./backend
+     g++ main.cpp -o main.exe
+     cd ..
+
+**3-** Run python server.py
 
     python server.py  
 
-**3-** Open in browser
+**4-** Open in browser
 
     http://127.0.0.1:8000/
 
-**4-** Use the application
+**5-** Use the application
 
 * Write your Markdown in the editor
 
