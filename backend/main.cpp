@@ -37,6 +37,10 @@ Portfolio :: Portfolio(){
 
 }
 
+string Portfolio :: parsing() {
+    return "";
+}
+
 // Reads entire file content into a single string
 
 string Portfolio :: readContent(fstream &file){
@@ -330,18 +334,21 @@ string Contact :: parsing(){
 }
 
 int main() {
-    Profile p;
-    p.html = p.parsing();
-    Skills s;
-    s.html = p.html;
-    s.html = s.parsing();
-    Projects pj;
-    pj.html = s.html;
-    pj.html = pj.parsing();
-    Contact c;
-    c.html = pj.html;
-    c.html = c.parsing();
+
+    Portfolio *ptr[4] = {new Profile, new Skills, new Projects, new Contact};
+    
+    for (int i=0; i<4; i++) {
+        if (i != 0) {
+            ptr[i]->html = ptr[i-1]->html;
+        }
+        ptr[i]->html = ptr[i]->parsing();
+    }
     ofstream indexFile("output/index.html");
-    indexFile << c.html;
-    return 0;
+    if (indexFile.is_open()) {
+        indexFile << ptr[3]->html;
+        indexFile.close();
+    } else {
+        cerr << "Failed to write output to file 'index.html'\n";
+    }
+
 }

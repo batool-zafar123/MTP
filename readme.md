@@ -6,6 +6,7 @@ Portify is an automated pipeline that converts structured Markdown into a fully 
 ## Program Flow and Logic 
 
 ### frontend.html
+
 This is the user-facing interface. It provides a dual-pane layout of adjustible size:
 
 * Left pane: Markdown editor
@@ -31,6 +32,7 @@ Users write Markdown in the editor and use these two buttons:
 **6-** Displays it in the preview iframe    
 
 ### main.cpp (Engine):
+
 This is the core processing unit of Portify.
 
 * Built using Object-Oriented Programming in C++
@@ -42,9 +44,11 @@ This is the core processing unit of Portify.
 * Map it into predefined sections of the template (template.html) via string parsing 
 * Identifies error if found while mapping.
 * Generate a complete index.html file
-* Given flowchart explains the working flow of engine
+* Given flowchart explains the working flow of engine:
 
-![Flow of engine](images/image-1.png)
+<br>
+
+![Flow of engine](Report\Code_flow.png)
 
 ## Features
 
@@ -74,22 +78,25 @@ Supports structured sections:
 Detects invalid Markdown structure and engine failures, and notifies the user
 
 
-
 ## Tech Stack & Concepts
+
    * **Object-Oriented Programming (C++)**
         * Encapsulation (Profile, Skills, Projects classes)
         * Inheritance (Portfolio base class)
+        * Dynamic Polymorphism (Late Binding)
    * **File Handling**
         * <fstream> for reading/writing files
    * **String Processing**
         * Custom parsing using std::string functions
    *  **Exception Handling**
         * Error signaling via exit codes from C++ engine to frontend
-   * Full-Stack Integration
+   * **Full-Stack Integration**
         * HTML/CSS/JS (Frontend)
         * Python Flask (Server)
         * C++ (Processing Engine)
+
 ## Instructions to run
+
 **1-** Download the project files
 
 **2-** Run python server.py
@@ -104,15 +111,22 @@ Detects invalid Markdown structure and engine failures, and notifies the user
 
 * Write your Markdown in the editor
 
-![Edit](images/image-2.png)
+![Edit](Report/1.png)
+
 * Click Run to preview
 
-![preview](images/image-3.png)
+![preview](Report/2.png)
+
+<br>
+
+![generate](Report/3.png)
+
 * Click Generate to open the final portfolio in a new tab
 
-![generate](images/image-4.png)
+![generate](Report/4.png)
 
 ## Authors
+
 * **Batool Zafar**
 * **Muhammad Hashim**
 

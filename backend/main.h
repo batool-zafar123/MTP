@@ -17,6 +17,8 @@ public:
 
     Portfolio();
 
+    virtual string parsing();
+
     fstream openFile(string path, ios::openmode mode);
     string readContent(fstream &file);
 };
