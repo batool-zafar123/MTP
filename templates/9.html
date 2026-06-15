@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d0f12; color: #e8eaf0; font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+    
+    .left-side { width: 40%; height: 100vh; position: fixed; top: 0; left: 0; background: #15181f; border-right: 1px solid #252a34; padding: 80px 40px; display: flex; flex-direction: column; justify-content: center; }
+    .right-side { width: 60%; margin-left: 40%; padding: 80px 60px; overflow-y: auto; }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 12px; }
+    .subtitle { color: #c8f04e; font-family: 'Syne', sans-serif; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 24px; }
+    blockquote { font-style: italic; color: #8b949e; border-left: 3px solid #c8f04e; padding-left: 16px; margin: 24px 0; }
+    
+    section { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid #252a34; }
+    section:last-of-type { border-bottom: none; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 24px; color: #ffffff; }
+    
+    .skill-item { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .skill-label { font-weight: bold; color: #c8f04e; text-transform: uppercase; font-size: 0.85rem; }
+    .skill-content { color: #8b949e; margin-top: 4px; }
+    
+    .projects-grid { grid-template-columns: 1fr; gap: 24px; }
+    .project-card { background: #15181f; border: 1px solid #252a34; border-radius: 8px; padding: 24px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; margin-bottom: 8px; color: #ffffff; }
+    .project-desc { color: #8b949e; font-size: 0.95rem; margin-bottom: 16px; }
+    .project-tech { font-family: monospace; color: #c8f04e; font-size: 0.8rem; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #c8f04e; display: inline-block; margin-top: 12px; font-size: 0.85rem; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid #252a34; padding: 14px; display: flex; justify-content: space-between; border-radius: 6px; }
+    .contact-link:hover { border-color: #c8f04e; }
+    .contact-label { color: #c8f04e; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .left-side { width: 100%; height: auto; position: relative; padding: 60px 20px; }
+      .right-side { width: 100%; margin-left: 0; padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="left-side">
+    <h1>[PROFILE_NAME]</h1>
+    <div class="subtitle">[PROFILE_TITLE]</div>
+    <p style="color:#8b949e;">[PROFILE_BIO]</p>
+    [PROFILE_QUOTE]
+  </div>
+  
+  <div class="right-side">
+    <section id="skills">
+      <h2 class="section-title">Core Expertise</h2>
+      [SKILLS_CONTENT]
+    </section>
+
+    <section id="projects">
+      <h2 class="section-title">Recent Developments</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </section>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>

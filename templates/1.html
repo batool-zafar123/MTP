@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME] - Bento Grid Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0d0e;
+      --card: #161719;
+      --border: #282a2d;
+      --accent: #c8f04e;
+      --text: #ffffff;
+      --text-muted: #888888;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 40px 20px; }
+    .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+    
+    .bento-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 32px; display: flex; flex-direction: column; transition: all 0.3s ease; }
+    .bento-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    
+    .hero-card { grid-column: span 8; }
+    .quote-card { grid-column: span 4; justify-content: center; align-items: center; text-align: center; border-left: 4px solid var(--accent); }
+    .bio-card { grid-column: span 6; }
+    .skills-card { grid-column: span 6; }
+    .projects-card { grid-column: span 12; }
+    .contact-card { grid-column: span 12; }
+
+    h1 { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+    .title-tag { color: var(--accent); font-family: 'Syne', sans-serif; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    blockquote { font-style: italic; font-size: 1.3rem; line-height: 1.5; color: #fff; }
+    
+    .skills-list { display: flex; flex-direction: column; gap: 12px; list-style: none; width: 100%; }
+    .skill-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .skill-label { font-weight: bold; color: var(--accent); }
+    .skill-content { color: var(--text-muted); }
+
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+    .project-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; }
+    .project-desc { color: var(--text-muted); font-size: 0.85rem; }
+    .project-tech { font-family: monospace; font-size: 0.75rem; color: var(--accent); }
+    .project-link { color: var(--text); font-weight: bold; text-decoration: none; font-size: 0.8rem; margin-top: auto; }
+    .project-link:hover { text-decoration: underline; }
+
+    .contact-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .contact-link { border: 1px solid var(--border); border-radius: 8px; padding: 12px 24px; color: var(--text); text-decoration: none; transition: 0.2s; display: flex; gap: 10px; }
+    .contact-link:hover { border-color: var(--accent); background: rgba(255,255,255,0.03); }
+    .contact-label { font-weight: bold; color: var(--accent); }
+
+    .sidebar-links { display: none; }
+
+    @media (max-width: 900px) {
+      .hero-card, .quote-card, .bio-card, .skills-card { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bento-card hero-card">
+      <h1>[PROFILE_NAME]</h1>
+      <span class="title-tag">[PROFILE_TITLE]</span>
+    </div>
+    <div class="bento-card quote-card">
+      [PROFILE_QUOTE]
+    </div>
+    <div class="bento-card bio-card">
+      <h2 style="font-family:'Syne'; margin-bottom:12px;">Biography</h2>
+      <p style="color:var(--text-muted); line-height:1.6;">[PROFILE_BIO]</p>
+    </div>
+    <div class="bento-card skills-card">
+      <h2 style="font-family:'Syne'; margin-bottom:16px;">Core Expertise</h2>
+      <ul class="skills-list">
+        [SKILLS_CONTENT]
+      </ul>
+    </div>
+    <div class="bento-card projects-card">
+      <h2 style="font-family:'Syne';">Selected Projects</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+      <div style="display:none;">[SIDEBAR_PROJECTS_LIST]</div>
+    </div>
+    <div class="bento-card contact-card">
+      <h2 style="font-family:'Syne'; text-align:center; margin-bottom:20px;">Let's Connect</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -6,6 +6,7 @@ using namespace std;
 
 int Portfolio::start = 0;
 int Portfolio::end = 0;
+string Portfolio::templatePath = "templates/1.html";
 
 // Base class to handle file reading and shared data (HTML + Markdown)
 
@@ -32,7 +33,8 @@ Portfolio :: Portfolio(){
                 exit(1); // Give error to the website
             }
            
-        fstream htmlFile = Portfolio::openFile("templates/template.html", ios::in);
+        // READ FROM DYNAMIC TEMPLATE PATH
+        fstream htmlFile = Portfolio::openFile(Portfolio::templatePath, ios::in);
         html = Portfolio::readContent(htmlFile);
 
 }
@@ -333,7 +335,23 @@ string Contact :: parsing(){
     return result;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    string templateNum = "1"; // Default template
+    if (argc > 1) {
+        templateNum = argv[1];
+    }
+    
+    string targetPath = "templates/" + templateNum + ".html";
+    
+    // Safety check: verify template file existence
+    ifstream checkFile(targetPath);
+    if (checkFile.is_open()) {
+        checkFile.close();
+        Portfolio::templatePath = targetPath;
+    } else {
+        // Fallback to default 1.html if specified template path does not exist
+        Portfolio::templatePath = "templates/1.html";
+    }
 
     Portfolio *ptr[4] = {new Profile, new Skills, new Projects, new Contact};
     

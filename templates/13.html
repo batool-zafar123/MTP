@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME] - Editorial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fbfaf7; color: #1c1b18; font-family: 'Lora', Georgia, serif; padding: 60px 20px; line-height: 1.6; }
+    .sheet { max-width: 900px; margin: 0 auto; border: 1px solid #c8c5bc; padding: 40px; }
+    
+    header { border-bottom: 3px double #1c1b18; padding-bottom: 24px; text-align: center; margin-bottom: 30px; }
+    .issue-date { font-family: sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #1c1b18; padding-bottom: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+    
+    h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; letter-spacing: -1px; line-height: 1; text-transform: uppercase; margin-bottom: 10px; }
+    .subtitle { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-style: italic; color: #8b2635; margin-bottom: 16px; }
+    
+    blockquote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.3rem; text-align: center; border-top: 1px solid #1c1b18; border-bottom: 1px solid #1c1b18; padding: 16px 0; margin: 24px 0; }
+    
+    .news-columns { display: flex; gap: 32px; margin-bottom: 30px; }
+    .col { flex: 1; }
+    
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; text-transform: uppercase; border-bottom: 2px solid #1c1b18; padding-bottom: 4px; margin-bottom: 20px; color: #8b2635; }
+    
+    .skill-item { margin-bottom: 14px; border-bottom: 1px solid #c8c5bc; padding-bottom: 6px; }
+    .skill-label { font-weight: bold; font-family: sans-serif; font-size: 0.8rem; text-transform: uppercase; }
+    
+    .project-card { border-bottom: 1px dashed #c8c5bc; padding-bottom: 20px; margin-bottom: 20px; }
+    .project-title { font-family: 'Playfair Display', serif; font-size: 1.30rem; font-weight: bold; margin-bottom: 6px; }
+    .project-tech { font-family: monospace; font-size: 0.8rem; color: #8b2635; margin: 6px 0; }
+    .project-link { text-decoration: none; color: #1c1b18; font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid #1c1b18; display: inline-block; margin-top: 8px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 10px; }
+    .contact-link { text-decoration: none; color: #1c1b18; border-bottom: 1px solid #c8c5bc; padding-bottom: 8px; display: flex; justify-content: space-between; }
+    .contact-label { font-weight: bold; font-family: sans-serif; font-size: 0.8rem; }
+    
+    .hidden-data { display: none; }
+    @media (max-width: 700px) {
+      .news-columns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <div class="issue-date">
+        <span>VOL. I &bull; NO. 15</span>
+        <span>PORTIFY DAILY EXPRESS</span>
+        <span>2026 EDITION</span>
+      </div>
+      <h1>[PROFILE_NAME]</h1>
+      <div class="subtitle">[PROFILE_TITLE]</div>
+    </header>
+
+    <div class="news-columns">
+      <div class="col" style="flex: 1.5;">
+        <p style="font-size: 1.05rem; text-align: justify; margin-bottom: 20px;">[PROFILE_BIO]</p>
+        [PROFILE_QUOTE]
+      </div>
+      
+      <div class="col">
+        <h2 class="section-title">Special Skills</h2>
+        [SKILLS_CONTENT]
+      </div>
+    </div>
+
+    <h2 class="section-title">Featured Chronicles</h2>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Correspondence</h2>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>

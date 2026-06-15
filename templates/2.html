@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ffffff; color: #000000; font-family: 'Inter', sans-serif; line-height: 1.8; padding: 120px 40px; }
+    .container { max-width: 760px; margin: 0 auto; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .subtitle { font-size: 1.1rem; font-style: italic; color: #707070; margin-bottom: 50px; }
+    section { margin-bottom: 70px; padding-top: 40px; border-top: 1px solid #e0e0e0; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 24px; }
+    p { margin-bottom: 20px; font-weight: 300; color: #333333; }
+    blockquote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.4rem; border-left: 2px solid #000; padding-left: 20px; margin: 30px 0; color: #555555; }
+    
+    .skills-list { list-style: none; }
+    .skill-item { margin-bottom: 16px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; }
+    .skill-label { font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; }
+    .skill-content { float: right; color: #666; font-size: 0.9rem; }
+    
+    .projects-list { display: flex; flex-direction: column; gap: 32px; }
+    .project-card { display: flex; flex-direction: column; }
+    .project-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 8px; }
+    .project-desc { color: #555; margin-bottom: 10px; }
+    .project-tech { font-size: 0.8rem; color: #888; font-family: monospace; }
+    .project-link { text-decoration: none; color: #000000; font-weight: 600; border-bottom: 1px solid #000; display: inline-block; width: max-content; margin-top: 12px; font-size: 0.85rem; }
+    .project-link:hover { color: #555; border-color: #555; }
+    
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #000; font-weight: 400; display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+    .contact-link:hover { color: #707070; }
+    .contact-label { font-weight: 600; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header style="margin-bottom: 80px;">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="subtitle">[PROFILE_TITLE]</div>
+      <p style="font-size: 1.15rem; font-weight: 300;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </header>
+
+    <section id="skills">
+      <h2>Expertise</h2>
+      <div class="skills-list">
+        [SKILLS_CONTENT]
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2>Works</h2>
+      <div class="projects-list">
+        [PROJECTS_CONTENT]
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Correspondence</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </section>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>

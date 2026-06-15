@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portify — About Developers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap"
+    rel="stylesheet">
+  <script>
+    (function () {
+      const savedTheme = localStorage.getItem('portify-theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-theme');
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --bg: #0d0f12;
+      --surface: #13161b;
+      --surface2: #1a1e25;
+      --border: #252a34;
+      --accent: #c8f04e;
+      --accent2: #4ef0c8;
+      --text: #e8eaf0;
+      --text-muted: #6b7280;
+      --font-ui: 'Syne', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --font-body: 'DM Sans', sans-serif;
+      --bar-h: 56px;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow-y: auto;
+    }
+
+    #topbar {
+      height: var(--bar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    #logo {
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    #logo span {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 4px;
+      position: relative;
+    }
+
+    #logo span::after {
+      content: '';
+      position: absolute;
+      inset: 4px 4px 4px 7px;
+      border-left: 2px solid var(--bg);
+      border-bottom: 2px solid var(--bg);
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    .topbar-nav {
+      display: flex;
+      gap: 8px;
+      margin-left: 30px;
+    }
+
+    .nav-btn {
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .nav-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-btn.active {
+      color: var(--accent);
+      background: rgba(200, 240, 78, 0.08);
+      border-color: rgba(200, 240, 78, 0.15);
+    }
+
+    body.light-theme .nav-btn.active {
+      background: rgba(79, 70, 229, 0.08);
+      border-color: rgba(79, 70, 229, 0.15);
+    }
+
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin-left: 10px;
+    }
+
+    .theme-toggle-btn:hover {
+      background: var(--surface2);
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+
+    body.light-theme {
+      --bg: #f4f6f9;
+      --surface: #ffffff;
+      --surface2: #eaeef3;
+      --border: #d1d5db;
+      --accent: #4f46e5;
+      --accent2: #0d9488;
+      --text: #111827;
+      --text-muted: #4b5563;
+    }
+
+    body.light-theme .theme-toggle-btn {
+      background: #eaeef3;
+      color: #111827;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px 20px;
+    }
+
+    .back-btn-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent2);
+      text-decoration: none;
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--text);
+    }
+
+    .page-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+
+    .page-title {
+      font-family: var(--font-ui);
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+    }
+
+    /* ── PROFILE CARDS ── */
+    .profile-cards-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-top: 40px;
+    }
+
+    @media(max-width: 768px) {
+      .profile-cards-container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+
+    .profile-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--bg);
+    }
+
+    .profile-name {
+      font-family: var(--font-ui);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .profile-role {
+      font-family: var(--font-mono);
+      color: var(--accent2);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: -8px;
+    }
+
+    .profile-bio {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+
+    .profile-details {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .detail-item {
+      display: flex;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+
+    .detail-label {
+      font-weight: 700;
+      color: var(--text);
+      min-width: 100px;
+    }
+
+    .detail-val {
+      color: var(--text-muted);
+    }
+
+    .profile-links {
+      margin-top: auto;
+      display: flex;
+      gap: 16px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .social-link {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+
+    .social-link:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body>
+
+  <div id="topbar">
+    <div id="logo">
+      <span></span>
+      Portify
+    </div>
+    <nav class="topbar-nav">
+      <a href="frontend.html" class="nav-btn">Editor</a>
+      <a href="templates.html" class="nav-btn">Templates</a>
+      <a href="about.html" class="nav-btn active">About</a>
+    </nav>
+    <div class="spacer"></div>
+    <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
+      <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+    </button>
+  </div>
+
+  <div class="container">
+    <div class="back-btn-wrapper">
+      <a href="frontend.html" class="back-link">
+        ← Go back to editor
+      </a>
+    </div>
+
+    <div class="page-header">
+      <h1 class="page-title">About the Developers</h1>
+      <p class="page-subtitle">Meet the engineering team behind the Portify Markdown-to-Portfolio Generator system.</p>
+    </div>
+
+    <div class="profile-cards-container">
+      <div class="profile-card">
+        <div class="profile-avatar">BZ</div>
+        <div>
+          <h3 class="profile-name">Batool Zafar</h3>
+          <p class="profile-role">Lead Architect & Backend Developer</p>
+        </div>
+        <p class="profile-bio">
+          Batool Zafar is the student specialized in low-level systems programmin. She designed the C++ Object Oriented parsing engine and
+          handles the Flask routing environment.
+        </p>
+        <div class="profile-details">
+          <div class="detail-item">
+            <span class="detail-label">Tech Stack:</span>
+            <span class="detail-val">C++, OOP, Python</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Responsibility:</span>
+            <span class="detail-val">Engine Logic & Integration Code</span>
+          </div>
+        </div>
+        <div class="profile-links">
+          <a href="https://www.linkedin.com/in/batool-zafar-141596298/" class="social-link" target="_blank">LinkedIn</a>
+          <a href="https://github.com/batool-zafar123" class="social-link" target="_blank">GitHub</a>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <div class="profile-avatar">MH</div>
+        <div>
+          <h3 class="profile-name">Muhammad Hashim</h3>
+          <p class="profile-role">Lead UI/UX & Frontend Engineer</p>
+        </div>
+        <p class="profile-bio">
+          Muhammad Hashim is a frontend developer and UI engineer. He focuses on managing interactive user interfaces,
+          responsive layouts, CSS styling, and the 15 production-ready template
+          grids.
+        </p>
+        <div class="profile-details">
+          <div class="detail-item">
+            <span class="detail-label">Tech Stack:</span>
+            <span class="detail-val">HTML, CSS, JS</span>
+          </div>
+          <div class="detail-item">
+            <span class="detail-label">Responsibility:</span>
+            <span class="detail-val">UI Design & Layout Styling</span>
+          </div>
+        </div>
+        <div class="profile-links">
+          <a href="https://www.linkedin.com/in/muhammad-hashim-naeem-053b6a271/" class="social-link" target="_blank">LinkedIn</a>
+          <a href="https://github.com/Muhammad-Hashim-16" class="social-link" target="_blank">GitHub</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const themeToggleBtn = document.getElementById('theme-toggle');
+      themeToggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const isLight = document.body.classList.contains('light-theme');
+        localStorage.setItem('portify-theme', isLight ? 'light' : 'dark');
+        if (isLight) {
+          document.documentElement.classList.add('light-theme');
+        } else {
+          document.documentElement.classList.remove('light-theme');
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

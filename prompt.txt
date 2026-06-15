@@ -1,0 +1,2954 @@
+================================================================================
+          PORTIFY: MULTI-TEMPLATE MARKDOWN-TO-PORTFOLIO GENERATOR
+                  COMPREHENSIVE IMPLEMENTATION SPECIFICATION
+================================================================================
+
+This document contains detailed, step-by-step instructions for an AI Agent to refactor and expand the Portify website. Follow these tasks sequentially to complete the implementation. 
+
+Ensure that no placeholder design is broken, C++ OOP principles are preserved, all paths are handled relative to the project root directory, and the theme systems are visually matching and seamless.
+
+---
+
+## TABLE OF CONTENTS
+1. Overview & Directory Structure
+2. Phase 1: Portify Frontend Refactoring (Multi-Page Expansion)
+   - 2.1. Shared Design System & Theme Styling
+   - 2.2. Refactoring `frontend/frontend.html` (The Editor Page)
+   - 2.3. Creating `frontend/templates.html` (The Templates Page)
+   - 2.4. Creating `frontend/about.html` (The About Page)
+3. Phase 2: C++ OOP Engine Modifications (`backend/`)
+   - 3.1. Updating `backend/main.h`
+   - 3.2. Updating `backend/main.cpp`
+4. Phase 3: Python Server Refactoring (`server.py`)
+5. Phase 4: Designing and Creating the 15 Portfolio Templates
+   - 4.1. Universal Template Guidelines & Class Rules
+   - 4.2. Template 1: Bento Box Grid (`1.html`)
+   - 4.3. Template 2: Ultra-Minimalist Monochromatic (`2.html`)
+   - 4.4. Template 3: Cyberpunk & Neo-Brutalism (`3.html`)
+   - 4.5. Template 4: Cinematic & Dark Mode (`4.html`)
+   - 4.6. Template 5: Scrollytelling Journey (`5.html`)
+   - 4.7. Template 6: Bold Typography-Driven (`6.html`)
+   - 4.8. Template 7: Gamified Retro Arcade (8-bit) (`7.html`)
+   - 4.9. Template 8: Horizontal Scrolling Layout (`8.html`)
+   - 4.10. Template 9: Split-Screen Layout (`9.html`)
+   - 4.11. Template 10: Neumorphism & Soft Shadows (`10.html`)
+   - 4.12. Template 11: Milestone / Timeline Grid (`11.html`)
+   - 4.13. Template 12: Dynamic Cursor Glow & Ambient Particles (`12.html`)
+   - 4.14. Template 13: Editorial Magazine Style (`13.html`)
+   - 4.15. Template 14: Glassmorphism & Aurora Glows (`14.html`)
+   - 4.16. Template 15: Creative Developer Terminal (`15.html`)
+6. Phase 5: Updating the `readme.md` File
+7. Phase 6: Testing, Compilation, and Verification Checklist
+
+---
+
+## 1. OVERVIEW & DIRECTORY STRUCTURE
+
+The current project is structured as follows:
+```
+Project MTP - Copy/
+├── backend/
+│   ├── main.cpp
+│   ├── main.exe
+│   └── main.h
+├── frontend/
+│   └── frontend.html
+├── templates/
+│   └── template.html
+├── output/
+│   └── (generated files will reside here)
+├── server.py
+├── readme.md
+└── input.md
+```
+
+After your execution, the directory structure MUST look like this:
+```
+Project MTP - Copy/
+├── backend/
+│   ├── main.cpp
+│   ├── main.exe
+│   └── main.h
+├── frontend/
+│   ├── frontend.html (Refactored)
+│   ├── templates.html (New Page)
+│   └── about.html (New Page)
+├── templates/
+│   ├── 1.html (Updated Bento Grid)
+│   ├── 2.html
+│   ├── 3.html
+│   ├── 4.html
+│   ├── 5.html
+│   ├── 6.html
+│   ├── 7.html
+│   ├── 8.html
+│   ├── 9.html
+│   ├── 10.html
+│   ├── 11.html
+│   ├── 12.html
+│   ├── 13.html
+│   ├── 14.html
+│   └── 15.html
+├── output/
+│   └── index.html (Generated output)
+├── server.py (Modified)
+├── readme.md (Modified)
+├── input.md
+└── prompt.txt (This instructions file)
+```
+
+---
+
+## 2. PHASE 1: PORTIFY FRONTEND REFACTORING (MULTI-PAGE EXPANSION)
+
+The main tool "Portify" is currently a single-page app containing an editor and preview pane. You must transform it into a multi-page web application while keeping the design aesthetic identical.
+
+### 2.1. Shared Design System & Theme Styling
+All three pages (`frontend.html`, `templates.html`, `about.html`) must use the same fonts, layout widths, colors, and transition effects. To ensure consistency, you must support **Dark and Light Theme Toggling** using root CSS variables and persist it via `localStorage`.
+
+Define the following CSS root variables in the head of each file or in a shared stylesheet. They represent the core design system:
+```css
+:root {
+  /* Dark mode (default) colors matching the current frontend.html */
+  --bg:          #0d0f12;
+  --surface:     #13161b;
+  --surface2:    #1a1e25;
+  --border:      #252a34;
+  --accent:      #c8f04e;   /* lime green */
+  --accent2:     #4ef0c8;  /* teal */
+  --text:        #e8eaf0;
+  --text-muted:  #6b7280;
+  --danger:      #f04e6b;
+  --font-ui:     'Syne', sans-serif;
+  --font-mono:   'DM Mono', monospace;
+  --font-body:   'DM Sans', sans-serif;
+  --bar-h:       56px;
+  --divider-w:   5px;
+}
+
+body.light-theme {
+  /* Light mode overrides */
+  --bg:          #f4f6f9;
+  --surface:     #ffffff;
+  --surface2:    #eaeef3;
+  --border:      #d1d5db;
+  --accent:      #4f46e5;   /* indigo */
+  --accent2:     #0d9488;  /* teal */
+  --text:        #111827;
+  --text-muted:  #4b5563;
+  --danger:      #e11d48;
+}
+```
+
+#### Theme Persistence Logic:
+Add this script directly inside the `<head>` tag of all three HTML files to prevent flash-of-dark-theme issues:
+```javascript
+(function() {
+  const savedTheme = localStorage.getItem('portify-theme');
+  if (savedTheme === 'light') {
+    document.documentElement.classList.add('light-theme');
+  }
+})();
+```
+In the body, add a utility class toggle function on a click event for the toggle button:
+```javascript
+const themeToggleBtn = document.getElementById('theme-toggle');
+themeToggleBtn.addEventListener('click', () => {
+  document.body.classList.toggle('light-theme');
+  const isLight = document.body.classList.contains('light-theme');
+  localStorage.setItem('portify-theme', isLight ? 'light' : 'dark');
+  // Sync across opened documents
+  if (isLight) {
+    document.documentElement.classList.add('light-theme');
+  } else {
+    document.documentElement.classList.remove('light-theme');
+  }
+});
+```
+
+---
+
+### 2.2. Refactoring `frontend/frontend.html` (The Editor Page)
+
+Perform the following modifications to `frontend/frontend.html`:
+
+#### 1. Navbar Addition:
+Modify the `#topbar` element to contain navigation buttons and controls:
+- Place it between the `#logo` and the status indicators.
+- Add three text links/buttons: **Editor**, **Templates**, **About**.
+- Highlight the **Editor** link as active.
+- Place a theme toggle button (`id="theme-toggle"`) styled as a circular minimal icon button.
+- Place a download button (`id="btn-download"`) next to the "Generate" button.
+
+```html
+<div id="topbar">
+  <div id="logo">
+    <span></span>
+    Portify
+  </div>
+  
+  <!-- Navigation Links -->
+  <nav class="topbar-nav">
+    <a href="frontend.html" class="nav-btn active">Editor</a>
+    <a href="templates.html" class="nav-btn">Templates</a>
+    <a href="about.html" class="nav-btn">About</a>
+  </nav>
+
+  <div class="spacer"></div>
+
+  <!-- Download & Theme Controls -->
+  <button class="btn btn-secondary" id="btn-download" title="Download Compiled HTML">
+    <span class="btn-icon">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+        <polyline points="7 10 12 15 17 10"></polyline>
+        <line x1="12" y1="15" x2="12" y2="3"></line>
+      </svg>
+    </span>
+    Download
+  </button>
+  
+  <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
+    <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+  </button>
+  
+  <div class="topbar-meta"><span class="status-dot"></span>Ready</div>
+</div>
+```
+
+#### 2. Navbar Styling:
+Add the following styles to the `<style>` block:
+```css
+.topbar-nav {
+  display: flex;
+  gap: 8px;
+  margin-left: 30px;
+}
+
+.nav-btn {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.nav-btn:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-btn.active {
+  color: var(--accent);
+  background: rgba(200, 240, 78, 0.08);
+  border-color: rgba(200, 240, 78, 0.15);
+}
+
+.theme-toggle-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  margin-left: 10px;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--surface2);
+  border-color: var(--accent2);
+  color: var(--accent2);
+}
+
+body.light-theme .theme-toggle-btn {
+  background: #eaeef3;
+  color: #111827;
+}
+
+#btn-download {
+  margin-right: 8px;
+}
+```
+
+#### 3. Update Run & Generate JavaScript:
+Locate the run and generate fetch mechanisms in the bottom scripts. Retrieve the active template ID stored in `localStorage` (key: `selected_template`, default to `'1'`) and add it to the JSON request payload.
+```javascript
+const templateId = localStorage.getItem('selected_template') || '1';
+```
+In both the `btnRun` and `btnGenerate` click events, modify the fetch options body to:
+```javascript
+body: JSON.stringify({ markdown, template: templateId })
+```
+
+#### 4. Implement Download Action:
+Write a click handler for `btn-download` to download the active portfolio file `output/index.html`:
+```javascript
+const btnDownload = document.getElementById('btn-download');
+btnDownload.addEventListener('click', () => {
+  const timestamp = new Date().getTime();
+  const downloadUrl = `http://localhost:8000/output/index.html?t=${timestamp}`;
+  const link = document.createElement('a');
+  link.href = downloadUrl;
+  link.download = 'portfolio.html';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  showToast('✓ Downloading portfolio...', 2000);
+});
+```
+
+---
+
+### 2.3. Creating `frontend/templates.html` (The Templates Page)
+
+Create a new file `frontend/templates.html`. It must match the editor page’s design style and structure. 
+
+#### Structure Guidelines:
+- Implement a similar `#topbar` containing Logo, Navigation links (with **Templates** highlighted as active), and the theme toggle.
+- Provide a "Go Back" button that points back to `frontend.html`.
+- Display a header section: "Portfolio Templates" with a subtitle explaining that the portfolio engine parses Markdown directly into these designs.
+- Create a 2-column grid container (`class="templates-grid"`).
+- Inside the grid, list the 15 templates with custom styling previews reflecting their actual colors, designs, and typography.
+- Each template card must contain:
+  1. Template name and style ID.
+  2. A mini interactive preview box (`class="template-preview"`) displaying placeholder title, bio details, skills badge list, and project card mockups. Apply CSS styling inside this preview that matches the corresponding templates EXACTLY.
+  3. A select button (`class="btn-select"`). When clicked, it stores the template number in `localStorage` under `selected_template` and updates the UI button states.
+- The default selected template should be `1`.
+
+#### Page Template Code (`frontend/templates.html`):
+Create this file exactly as follows:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portify — Portfolio Templates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('portify-theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-theme');
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --bg:          #0d0f12;
+      --surface:     #13161b;
+      --surface2:    #1a1e25;
+      --border:      #252a34;
+      --accent:      #c8f04e;
+      --accent2:     #4ef0c8;
+      --text:        #e8eaf0;
+      --text-muted:  #6b7280;
+      --font-ui:     'Syne', sans-serif;
+      --font-mono:   'DM Mono', monospace;
+      --font-body:   'DM Sans', sans-serif;
+      --bar-h:       56px;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow-y: auto;
+    }
+ 
+    #topbar {
+      height: var(--bar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+ 
+    #logo {
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    #logo span {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 4px;
+      position: relative;
+    }
+ 
+    #logo span::after {
+      content: '';
+      position: absolute;
+      inset: 4px 4px 4px 7px;
+      border-left: 2px solid var(--bg);
+      border-bottom: 2px solid var(--bg);
+    }
+ 
+    .spacer { flex: 1; }
+ 
+    .topbar-nav {
+      display: flex;
+      gap: 8px;
+      margin-left: 30px;
+    }
+ 
+    .nav-btn {
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+ 
+    .nav-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+ 
+    .nav-btn.active {
+      color: var(--accent);
+      background: rgba(200, 240, 78, 0.08);
+      border-color: rgba(200, 240, 78, 0.15);
+    }
+ 
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin-left: 10px;
+    }
+ 
+    .theme-toggle-btn:hover {
+      background: var(--surface2);
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+ 
+    body.light-theme {
+      --bg:          #f4f6f9;
+      --surface:     #ffffff;
+      --surface2:    #eaeef3;
+      --border:      #d1d5db;
+      --accent:      #4f46e5;
+      --accent2:     #0d9488;
+      --text:        #111827;
+      --text-muted:  #4b5563;
+    }
+    
+    body.light-theme .theme-toggle-btn {
+      background: #eaeef3;
+      color: #111827;
+    }
+ 
+    /* ── CONTENT AREA ── */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px 80px 20px;
+    }
+ 
+    .page-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+ 
+    .page-title {
+      font-family: var(--font-ui);
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+ 
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+    }
+ 
+    .back-btn-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+ 
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent2);
+      text-decoration: none;
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+ 
+    .back-link:hover {
+      color: var(--text);
+    }
+ 
+    /* ── TEMPLATES GRID ── */
+    .templates-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+    }
+ 
+    @media(max-width: 850px) {
+      .templates-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+ 
+    .template-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+ 
+    .template-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent2);
+    }
+ 
+    .template-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+ 
+    .template-name {
+      font-family: var(--font-ui);
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+ 
+    .template-id-tag {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      background: rgba(200, 240, 78, 0.1);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+ 
+    .btn-select-tmpl {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+ 
+    .btn-select-tmpl:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: rgba(200, 240, 78, 0.05);
+    }
+ 
+    .btn-select-tmpl.active {
+      background: var(--accent);
+      color: var(--bg) !important;
+      border-color: var(--accent);
+    }
+ 
+    /* ── PREVIEW BOXES SPECIFIC STYLING ── */
+    .template-preview {
+      height: 200px;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid var(--border);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      font-size: 0.7rem;
+    }
+ 
+    /* Preview Styles representation */
+    .t1-bento { background: #0c0d0e; color: #fff; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .t1-bento div { background: #161719; border: 1px solid #282a2d; padding: 6px; border-radius: 4px; }
+ 
+    .t2-mini { background: #ffffff; color: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #ddd; }
+    .t2-mini hr { width: 40px; border-color: #000; margin: 4px 0; }
+ 
+    .t3-cyber { background: #0f0f1a; color: #00ffcc; border: 2px solid #000 !important; font-family: monospace; box-shadow: 4px 4px 0px #000; }
+    .t3-cyber .title { color: #ff0055; text-shadow: 0 0 5px #ff0055; }
+ 
+    .t4-cinematic { background: radial-gradient(circle, #1a1d24 0%, #0a0b0d 100%); color: #fff; display: flex; flex-direction: column; justify-content: space-around; }
+    .t4-cinematic .gold { color: #b8860b; }
+ 
+    .t5-scrolly { background: #050505; color: #e0e0e0; position: relative; }
+    .t5-scrolly::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: #4ef0c8; }
+ 
+    .t6-bold { background: #0e0d0c; color: #f5f2eb; display: flex; align-items: center; justify-content: center; }
+    .t6-bold h1 { font-size: 2.2rem; font-weight: 900; -webkit-text-stroke: 0.5px #f5f2eb; color: transparent; }
+ 
+    .t7-gamified { background: #000000; color: #00ff00; border: 3px double #ffffff !important; font-family: monospace; }
+    .t7-gamified .hp { border: 1px solid #00ff00; width: 60px; height: 6px; display: inline-block; }
+ 
+    .t8-horiz { background: #121212; color: #ffffff; display: flex; flex-direction: row; gap: 10px; width: 100%; overflow-x: hidden; }
+    .t8-horiz .pane { flex: 0 0 70%; background: #1f1f1f; padding: 10px; border-radius: 4px; }
+ 
+    .t9-split { background: #0d0f12; color: #fff; display: flex; height: 100%; }
+    .t9-split .left { width: 40%; background: #15181f; padding: 10px; border-right: 1px solid #252a34; }
+    .t9-split .right { width: 60%; padding: 10px; overflow-y: hidden; }
+ 
+    .t10-neum { background: #e0e0e0; color: #333; display: flex; flex-direction: column; justify-content: center; gap: 8px; align-items: center; }
+    .t10-neum .card { background: #e0e0e0; box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff; padding: 8px; border-radius: 6px; width: 80%; text-align: center; }
+ 
+    .t11-timeline { background: #0f172a; color: #f8fafc; }
+    .t11-timeline .dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; display: inline-block; margin-right: 6px; }
+ 
+    .t12-glow { background: #0b0c10; color: #e8eaf0; }
+    .t12-glow .card { border: 1px solid rgba(102, 252, 241, 0.3); background: rgba(31, 40, 51, 0.65); box-shadow: 0 0 10px rgba(102, 252, 241, 0.2); padding: 8px; border-radius: 6px; }
+ 
+    .t13-magazine { background: #fbfaf7; color: #1c1b18; border: 1px solid #c8c5bc; }
+    .t13-magazine h2 { border-bottom: 2px double #1c1b18; padding-bottom: 4px; font-family: Georgia, serif; }
+ 
+    .t14-glass { background: linear-gradient(135deg, #1f1f2e, #0f0f1a); color: #fff; display: flex; align-items: center; justify-content: center; }
+    .t14-glass .card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 8px; padding: 12px; width: 80%; }
+ 
+    .t15-terminal { background: #0a0e14; color: #5af78e; font-family: monospace; display: flex; flex-direction: column; gap: 4px; }
+  </style>
+</head>
+<body>
+ 
+<div id="topbar">
+  <div id="logo">
+    <span></span>
+    Portify
+  </div>
+  <nav class="topbar-nav">
+    <a href="frontend.html" class="nav-btn">Editor</a>
+    <a href="templates.html" class="nav-btn active">Templates</a>
+    <a href="about.html" class="nav-btn">About</a>
+  </nav>
+  <div class="spacer"></div>
+  <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
+    <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+  </button>
+</div>
+ 
+<div class="container">
+  <div class="back-btn-wrapper">
+    <a href="frontend.html" class="back-link">
+      ← Go back to editor
+    </a>
+  </div>
+ 
+  <div class="page-header">
+    <h1 class="page-title">Portfolio Templates</h1>
+    <p class="page-subtitle">Choose from 15 sleek and distinct portfolio designs curated for developers. Your Markdown will be parsed directly into these production-ready designs.</p>
+  </div>
+ 
+  <div class="templates-grid">
+    <!-- Bento Box Grid -->
+    <div class="template-card" data-id="1">
+      <div class="template-info">
+        <span class="template-name">Bento Box Grid</span>
+        <span class="template-id-tag">ID: 1</span>
+      </div>
+      <div class="template-preview t1-bento">
+        <div style="grid-column: span 2;">John Doe</div>
+        <div>Quote</div>
+        <div style="grid-column: span 3;">Software Engineer - Web Specialist</div>
+        <div style="grid-column: span 1.5;">Skills: JS, C++, Python</div>
+        <div style="grid-column: span 1.5;">Projects: Portify, OS Kernel</div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('1')">Select Template</button>
+    </div>
+ 
+    <!-- Ultra-Minimalist Monochromatic -->
+    <div class="template-card" data-id="2">
+      <div class="template-info">
+        <span class="template-name">Ultra-Minimalist</span>
+        <span class="template-id-tag">ID: 2</span>
+      </div>
+      <div class="template-preview t2-mini">
+        <h4 style="font-weight:300;">JOHN DOE</h4>
+        <hr>
+        <p style="font-size:0.6rem; color:#666;">Software Engineer</p>
+        <p style="font-size:0.55rem; width:80%; text-align:center; margin-top:10px;">Focused on clean, high-contrast, text-only minimal designs.</p>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('2')">Select Template</button>
+    </div>
+ 
+    <!-- Cyberpunk & Neo-Brutalism -->
+    <div class="template-card" data-id="3">
+      <div class="template-info">
+        <span class="template-name">Cyberpunk Neo-Brutalist</span>
+        <span class="template-id-tag">ID: 3</span>
+      </div>
+      <div class="template-preview t3-cyber">
+        <h4 class="title">> JOHN DOE</h4>
+        <div style="margin-top:10px; border:1px solid #ff0055; padding:4px; font-size:0.55rem;">
+          SYSTEM: RUNNING OK
+        </div>
+        <p style="font-size:0.55rem; color:#fff; margin-top:8px;">[PROJECTS] Portify engine, Retro terminal</p>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('3')">Select Template</button>
+    </div>
+ 
+    <!-- Cinematic & Dark Mode -->
+    <div class="template-card" data-id="4">
+      <div class="template-info">
+        <span class="template-name">Cinematic Golden</span>
+        <span class="template-id-tag">ID: 4</span>
+      </div>
+      <div class="template-preview t4-cinematic">
+        <h3 style="font-weight:400; letter-spacing: 2px;">J O H N  D O E</h3>
+        <p class="gold" style="font-size:0.6rem; font-style:italic;">"Building high-end creative web applications"</p>
+        <div style="font-size:0.55rem; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;">Web Designer & System Engineer</div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('4')">Select Template</button>
+    </div>
+ 
+    <!-- Scrollytelling Journey -->
+    <div class="template-card" data-id="5">
+      <div class="template-info">
+        <span class="template-name">Scrollytelling Journey</span>
+        <span class="template-id-tag">ID: 5</span>
+      </div>
+      <div class="template-preview t5-scrolly">
+        <div style="position:absolute; left:55%; top:20px; font-size:0.55rem;">
+          <strong>Profile</strong><br>John Doe
+        </div>
+        <div style="position:absolute; right:55%; top:80px; font-size:0.55rem; text-align:right;">
+          <strong>Skills</strong><br>Fullstack Web
+        </div>
+        <div style="position:absolute; left:55%; top:140px; font-size:0.55rem;">
+          <strong>Work</strong><br>Portify Engine
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('5')">Select Template</button>
+    </div>
+ 
+    <!-- Bold Typography-Driven -->
+    <div class="template-card" data-id="6">
+      <div class="template-info">
+        <span class="template-name">Bold Typography-Driven</span>
+        <span class="template-id-tag">ID: 6</span>
+      </div>
+      <div class="template-preview t6-bold">
+        <h1>CREATIVE</h1>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('6')">Select Template</button>
+    </div>
+ 
+    <!-- Gamified Design -->
+    <div class="template-card" data-id="7">
+      <div class="template-info">
+        <span class="template-name">8-bit Gamified Arcade</span>
+        <span class="template-id-tag">ID: 7</span>
+      </div>
+      <div class="template-preview t7-gamified">
+        <p>GUEST@USER:~$ LEVEL 99</p>
+        <p style="margin: 8px 0;">HP: <span class="hp"><span style="display:block; height:100%; width:80%; background:#00ff00;"></span></span> 80/100</p>
+        <p style="font-size:0.55rem; color:#888;">[Press START to compile]</p>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('7')">Select Template</button>
+    </div>
+ 
+    <!-- Horizontal Scrolling -->
+    <div class="template-card" data-id="8">
+      <div class="template-info">
+        <span class="template-name">Horizontal Scrolling</span>
+        <span class="template-id-tag">ID: 8</span>
+      </div>
+      <div class="template-preview t8-horiz">
+        <div class="pane">
+          <h4>Panel 1</h4>
+          <p style="font-size:0.55rem;">Swipe or scroll horizontally to see items.</p>
+        </div>
+        <div class="pane" style="background:#2d2d2d;">
+          <h4>Panel 2</h4>
+          <p style="font-size:0.55rem;">Projects & work cards slide left/right.</p>
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('8')">Select Template</button>
+    </div>
+ 
+    <!-- Split-Screen Layout -->
+    <div class="template-card" data-id="9">
+      <div class="template-info">
+        <span class="template-name">Split-Screen Layout</span>
+        <span class="template-id-tag">ID: 9</span>
+      </div>
+      <div class="template-preview t9-split">
+        <div class="left">
+          <strong>John Doe</strong>
+          <p style="font-size:0.5rem; color:#888; margin-top:8px;">Systems C++ & Web dev</p>
+        </div>
+        <div class="right">
+          <h5 style="color:var(--accent);">Featured Work</h5>
+          <div style="border:1px solid #333; margin-top:4px; padding:4px;">Portify</div>
+          <div style="border:1px solid #333; margin-top:4px; padding:4px;">Compilers</div>
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('9')">Select Template</button>
+    </div>
+ 
+    <!-- Neumorphism & Soft Shadows -->
+    <div class="template-card" data-id="10">
+      <div class="template-info">
+        <span class="template-name">Neumorphic Soft Extrusion</span>
+        <span class="template-id-tag">ID: 10</span>
+      </div>
+      <div class="template-preview t10-neum">
+        <div class="card">
+          <strong style="font-size:0.75rem;">John Doe</strong>
+        </div>
+        <div class="card" style="box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff;">
+          <span style="font-size:0.55rem; color:#666;">Skills list</span>
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('10')">Select Template</button>
+    </div>
+ 
+    <!-- Milestone / Timeline Grid -->
+    <div class="template-card" data-id="11">
+      <div class="template-info">
+        <span class="template-name">Milestone / Timeline Grid</span>
+        <span class="template-id-tag">ID: 11</span>
+      </div>
+      <div class="template-preview t11-timeline">
+        <p style="font-size:0.6rem; padding: 6px;"><span class="dot"></span> <strong>2026</strong> - Portify Project Release</p>
+        <p style="font-size:0.6rem; padding: 6px;"><span class="dot"></span> <strong>2025</strong> - C++ Parsing Engine build</p>
+        <p style="font-size:0.6rem; padding: 6px;"><span class="dot"></span> <strong>2024</strong> - Web server deployment</p>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('11')">Select Template</button>
+    </div>
+ 
+    <!-- Dynamic Cursor Effects -->
+    <div class="template-card" data-id="12">
+      <div class="template-info">
+        <span class="template-name">Dynamic Glow Cursor</span>
+        <span class="template-id-tag">ID: 12</span>
+      </div>
+      <div class="template-preview t12-glow">
+        <div class="card">
+          <strong>Interactive Aura</strong>
+          <p style="font-size:0.55rem; color:#66fcf1; margin-top:4px;">Glow follows hover movement</p>
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('12')">Select Template</button>
+    </div>
+ 
+    <!-- Editorial Magazine Style -->
+    <div class="template-card" data-id="13">
+      <div class="template-info">
+        <span class="template-name">Editorial Magazine</span>
+        <span class="template-id-tag">ID: 13</span>
+      </div>
+      <div class="template-preview t13-magazine">
+        <h2 style="font-size:0.9rem; text-align:center;">THE DEVELOPER GAZETTE</h2>
+        <div style="display:flex; gap:10px; margin-top:10px;">
+          <div style="width:50%; font-size:0.5rem; border-right:1px solid #1c1b18; padding-right:4px;">
+            <strong>John Doe</strong> is a systems engineer building C++ parsing toolchains for HTML...
+          </div>
+          <div style="width:50%; font-size:0.5rem;">
+            <strong>Featured Project</strong>: Portify generates clean code in seconds...
+          </div>
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('13')">Select Template</button>
+    </div>
+ 
+    <!-- Glassmorphism & Aurora Glows -->
+    <div class="template-card" data-id="14">
+      <div class="template-info">
+        <span class="template-name">Glassmorphism Frosted Aurora</span>
+        <span class="template-id-tag">ID: 14</span>
+      </div>
+      <div class="template-preview t14-glass">
+        <div class="card">
+          <strong>Glass Card</strong>
+          <p style="font-size:0.55rem; opacity:0.7; margin-top:4px;">Backdrop filter blur overlaying soft color blobs.</p>
+        </div>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('14')">Select Template</button>
+    </div>
+ 
+    <!-- Creative Developer Terminal -->
+    <div class="template-card" data-id="15">
+      <div class="template-info">
+        <span class="template-name">Developer UNIX Terminal</span>
+        <span class="template-id-tag">ID: 15</span>
+      </div>
+      <div class="template-preview t15-terminal">
+        <p style="color:#f3f99d;">[sys-admin@portify]$ cat intro.txt</p>
+        <p style="color:#ffffff;">Hello, I am John Doe, Software Engineer.</p>
+        <p style="color:#5af78e;">[sys-admin@portify]$ ls projects/</p>
+        <p style="color:#888;">portify_engine/ &nbsp; blog_site/</p>
+      </div>
+      <button class="btn-select-tmpl" onclick="selectTemplate('15')">Select Template</button>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  // Dynamic selection indicator and update mechanisms
+  function selectTemplate(id) {
+    localStorage.setItem('selected_template', id);
+    updateSelectButtons();
+  }
+ 
+  function updateSelectButtons() {
+    const activeId = localStorage.getItem('selected_template') || '1';
+    document.querySelectorAll('.btn-select-tmpl').forEach(btn => {
+      const card = btn.closest('.template-card');
+      const cardId = card.getAttribute('data-id');
+      if (cardId === activeId) {
+        btn.classList.add('active');
+        btn.textContent = 'Selected';
+      } else {
+        btn.classList.remove('active');
+        btn.textContent = 'Select Template';
+      }
+    });
+  }
+ 
+  // Initial active settings checking
+  window.addEventListener('DOMContentLoaded', () => {
+    updateSelectButtons();
+    
+    // Connect theme toggle button if clicked
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+      localStorage.setItem('portify-theme', isLight ? 'light' : 'dark');
+      if (isLight) {
+        document.documentElement.classList.add('light-theme');
+      } else {
+        document.documentElement.classList.remove('light-theme');
+      }
+    });
+  });
+</script>
+</body>
+</html>
+```
+
+---
+
+### 2.4. Creating `frontend/about.html` (The About Page)
+
+Create a new file `frontend/about.html` to host developers information with placeholders. The aesthetics must match `frontend.html`.
+
+#### Page Template Code (`frontend/about.html`):
+Create this file exactly as follows:
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portify — About Developers</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+  <script>
+    (function() {
+      const savedTheme = localStorage.getItem('portify-theme');
+      if (savedTheme === 'light') {
+        document.documentElement.classList.add('light-theme');
+      }
+    })();
+  </script>
+  <style>
+    :root {
+      --bg:          #0d0f12;
+      --surface:     #13161b;
+      --surface2:    #1a1e25;
+      --border:      #252a34;
+      --accent:      #c8f04e;
+      --accent2:     #4ef0c8;
+      --text:        #e8eaf0;
+      --text-muted:  #6b7280;
+      --font-ui:     'Syne', sans-serif;
+      --font-mono:   'DM Mono', monospace;
+      --font-body:   'DM Sans', sans-serif;
+      --bar-h:       56px;
+    }
+ 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ 
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow-y: auto;
+    }
+ 
+    #topbar {
+      height: var(--bar-h);
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+ 
+    #logo {
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: -0.03em;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+ 
+    #logo span {
+      display: inline-block;
+      width: 22px;
+      height: 22px;
+      background: var(--accent);
+      border-radius: 4px;
+      position: relative;
+    }
+ 
+    #logo span::after {
+      content: '';
+      position: absolute;
+      inset: 4px 4px 4px 7px;
+      border-left: 2px solid var(--bg);
+      border-bottom: 2px solid var(--bg);
+    }
+ 
+    .spacer { flex: 1; }
+ 
+    .topbar-nav {
+      display: flex;
+      gap: 8px;
+      margin-left: 30px;
+    }
+ 
+    .nav-btn {
+      font-family: var(--font-ui);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+ 
+    .nav-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+ 
+    .nav-btn.active {
+      color: var(--accent);
+      background: rgba(200, 240, 78, 0.08);
+      border-color: rgba(200, 240, 78, 0.15);
+    }
+ 
+    .theme-toggle-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      margin-left: 10px;
+    }
+ 
+    .theme-toggle-btn:hover {
+      background: var(--surface2);
+      border-color: var(--accent2);
+      color: var(--accent2);
+    }
+ 
+    body.light-theme {
+      --bg:          #f4f6f9;
+      --surface:     #ffffff;
+      --surface2:    #eaeef3;
+      --border:      #d1d5db;
+      --accent:      #4f46e5;
+      --accent2:     #0d9488;
+      --text:        #111827;
+      --text-muted:  #4b5563;
+    }
+ 
+    body.light-theme .theme-toggle-btn {
+      background: #eaeef3;
+      color: #111827;
+    }
+ 
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px 20px;
+    }
+ 
+    .back-btn-wrapper {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 20px;
+    }
+ 
+    .back-link {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--accent2);
+      text-decoration: none;
+      font-family: var(--font-ui);
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+ 
+    .back-link:hover {
+      color: var(--text);
+    }
+ 
+    .page-header {
+      margin-bottom: 40px;
+      text-align: center;
+    }
+ 
+    .page-title {
+      font-family: var(--font-ui);
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+    }
+ 
+    .page-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+    }
+ 
+    /* ── PROFILE CARDS ── */
+    .profile-cards-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 32px;
+      margin-top: 40px;
+    }
+ 
+    @media(max-width: 768px) {
+      .profile-cards-container {
+        grid-template-columns: 1fr;
+      }
+    }
+ 
+    .profile-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color 0.3s, transform 0.3s;
+    }
+ 
+    .profile-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-4px);
+    }
+ 
+    .profile-avatar {
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-ui);
+      font-weight: 800;
+      font-size: 1.8rem;
+      color: var(--bg);
+    }
+ 
+    .profile-name {
+      font-family: var(--font-ui);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+ 
+    .profile-role {
+      font-family: var(--font-mono);
+      color: var(--accent2);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: -8px;
+    }
+ 
+    .profile-bio {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+ 
+    .profile-details {
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+ 
+    .detail-item {
+      display: flex;
+      gap: 8px;
+      font-size: 0.85rem;
+    }
+ 
+    .detail-label {
+      font-weight: 700;
+      color: var(--text);
+      min-width: 100px;
+    }
+ 
+    .detail-val {
+      color: var(--text-muted);
+    }
+ 
+    .profile-links {
+      margin-top: auto;
+      display: flex;
+      gap: 16px;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+ 
+    .social-link {
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color 0.2s;
+    }
+ 
+    .social-link:hover {
+      color: var(--text);
+    }
+  </style>
+</head>
+<body>
+ 
+<div id="topbar">
+  <div id="logo">
+    <span></span>
+    Portify
+  </div>
+  <nav class="topbar-nav">
+    <a href="frontend.html" class="nav-btn">Editor</a>
+    <a href="templates.html" class="nav-btn">Templates</a>
+    <a href="about.html" class="nav-btn active">About</a>
+  </nav>
+  <div class="spacer"></div>
+  <button id="theme-toggle" class="theme-toggle-btn" title="Toggle Light/Dark Mode">
+    <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+  </button>
+</div>
+ 
+<div class="container">
+  <div class="back-btn-wrapper">
+    <a href="frontend.html" class="back-link">
+      ← Go back to editor
+    </a>
+  </div>
+ 
+  <div class="page-header">
+    <h1 class="page-title">About the Developers</h1>
+    <p class="page-subtitle">Meet the engineering team behind the Portify Markdown-to-Portfolio Generator system.</p>
+  </div>
+ 
+  <div class="profile-cards-container">
+    <!-- Profile Card 1: Muhammad Hashim -->
+    <div class="profile-card">
+      <div class="profile-avatar">MH</div>
+      <div>
+        <h3 class="profile-name">Muhammad Hashim</h3>
+        <p class="profile-role">Lead Architect & Backend Developer</p>
+      </div>
+      <p class="profile-bio">
+        Muhammad Hashim is a software engineering student who specializes in low-level systems programming, compilation automation, and backend architectures. He co-designed the C++ Object Oriented parsing engine and handles the Flask routing environment.
+      </p>
+      <div class="profile-details">
+        <div class="detail-item">
+          <span class="detail-label">Tech Stack:</span>
+          <span class="detail-val">C++, OOP, Python, Shell Scripting</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Responsibility:</span>
+          <span class="detail-val">Engine Logic & Integration Code</span>
+        </div>
+      </div>
+      <div class="profile-links">
+        <a href="https://linkedin.com/in/muhammad-hashim-placeholder" class="social-link" target="_blank">LinkedIn</a>
+        <a href="https://github.com/muhammad-hashim-placeholder" class="social-link" target="_blank">GitHub</a>
+      </div>
+    </div>
+ 
+    <!-- Profile Card 2: Batool Zafar -->
+    <div class="profile-card">
+      <div class="profile-avatar">BZ</div>
+      <div>
+        <h3 class="profile-name">Batool Zafar</h3>
+        <p class="profile-role">Lead UI/UX & Frontend Engineer</p>
+      </div>
+      <p class="profile-bio">
+        Batool Zafar is a frontend developer and UI engineer. She focuses on creating interactive user interfaces, structured responsive layouts, CSS styling variables mappings, and managing the 15 production-ready template grids.
+      </p>
+      <div class="profile-details">
+        <div class="detail-item">
+          <span class="detail-label">Tech Stack:</span>
+          <span class="detail-val">HTML, CSS, JS, Systems Design</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Responsibility:</span>
+          <span class="detail-val">UI Design & Core Layout Styling</span>
+        </div>
+      </div>
+      <div class="profile-links">
+        <a href="https://linkedin.com/in/batool-zafar-placeholder" class="social-link" target="_blank">LinkedIn</a>
+        <a href="https://github.com/batool-zafar-placeholder" class="social-link" target="_blank">GitHub</a>
+      </div>
+    </div>
+  </div>
+</div>
+ 
+<script>
+  window.addEventListener('DOMContentLoaded', () => {
+    // Theme toggle matching editor
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-theme');
+      const isLight = document.body.classList.contains('light-theme');
+      localStorage.setItem('portify-theme', isLight ? 'light' : 'dark');
+      if (isLight) {
+        document.documentElement.classList.add('light-theme');
+      } else {
+        document.documentElement.classList.remove('light-theme');
+      }
+    });
+  });
+</script>
+</body>
+</html>
+```
+
+---
+
+## 3. PHASE 2: C++ OOP ENGINE MODIFICATIONS (`backend/`)
+
+To support loading a template dynamically based on user selection, you must modify the C++ program to accept a template identifier as a command-line parameter.
+
+### 3.1. Updating `backend/main.h`
+Modify `backend/main.h` to declare a static variable `templatePath` inside the `Portfolio` class definition:
+
+```cpp
+// Add to lines inside class Portfolio definition
+class Portfolio {       
+public:
+    string html;
+    string input;
+
+    static int start;
+    static int end;
+    
+    // Add this new static member:
+    static string templatePath;
+
+    Portfolio();
+
+    virtual string parsing();
+
+    fstream openFile(string path, ios::openmode mode);
+    string readContent(fstream &file);
+};
+```
+
+---
+
+### 3.2. Updating `backend/main.cpp`
+
+Modify `backend/main.cpp` to initialize, read, and process the command-line argument.
+
+#### 1. Define static variable initialized at the top:
+```cpp
+// Near line 8 (where Portfolio::start is initialized)
+int Portfolio::start = 0;
+int Portfolio::end = 0;
+string Portfolio::templatePath = "templates/1.html"; // Default path initialization
+```
+
+#### 2. Modify `Portfolio` Constructor:
+Change the line where `htmlFile` is opened so it reads `Portfolio::templatePath` instead of a hardcoded path:
+```cpp
+Portfolio :: Portfolio(){
+    fstream inputFile = Portfolio::openFile("input.md", ios :: in);
+    input = Portfolio::readContent(inputFile);
+
+    // Checking the basic layout of md
+    if (
+        input.find("# PROFILE") == string::npos ||
+        input.find("# SKILLS") == string::npos ||
+        input.find("# PROJECTS") == string::npos || 
+        input.find("# CONTACT") == string::npos
+        ) {
+            cout << "Error: Basic layout of md is corrupted...\n";
+            exit(1); // Give error to the website
+        }
+       
+    // READ FROM DYNAMIC TEMPLATE PATH
+    fstream htmlFile = Portfolio::openFile(Portfolio::templatePath, ios::in);
+    html = Portfolio::readContent(htmlFile);
+}
+```
+
+#### 3. Modify `main` function:
+Read `argv[1]` if provided, check if the file exists, and set `Portfolio::templatePath`:
+```cpp
+int main(int argc, char* argv[]) {
+    string templateNum = "1"; // Default template
+    if (argc > 1) {
+        templateNum = argv[1];
+    }
+    
+    string targetPath = "templates/" + templateNum + ".html";
+    
+    // Safety check: verify template file existence
+    ifstream checkFile(targetPath);
+    if (checkFile.is_open()) {
+        checkFile.close();
+        Portfolio::templatePath = targetPath;
+    } else {
+        // Fallback to default 1.html if specified template path does not exist
+        Portfolio::templatePath = "templates/1.html";
+    }
+
+    Portfolio *ptr[4] = {new Profile, new Skills, new Projects, new Contact};
+    
+    for (int i=0; i<4; i++) {
+        if (i != 0) {
+            ptr[i]->html = ptr[i-1]->html;
+        }
+        ptr[i]->html = ptr[i]->parsing();
+    }
+    
+    ofstream indexFile("output/index.html");
+    if (indexFile.is_open()) {
+        indexFile << ptr[3]->html;
+        indexFile.close();
+    } else {
+        cerr << "Failed to write output to file 'index.html'\n";
+    }
+}
+```
+
+---
+
+## 4. PHASE 3: PYTHON SERVER REFACTORING (`server.py`)
+
+Refactor `server.py` to:
+1. Fix the typo serving `frontend.htm` to `frontend.html`.
+2. Extract the `template` parameter from the JSON request payload.
+3. Pass the template number as a shell argument when invoking the compiled `main.exe` executable.
+
+```python
+from flask import Flask, request, send_file, send_from_directory
+from flask_cors import CORS
+import subprocess
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+@app.route('/')
+def home():
+    # FIXED TYPO: Serve frontend.html instead of non-existent frontend.htm
+    return send_file('frontend/frontend.html')
+
+@app.route('/output/<path:filename>')
+def serve_output(filename):
+    """Serve files from the output directory"""
+    return send_from_directory('output', filename)
+
+@app.route('/generate', methods=['POST'])
+def handle_generation():
+    data = request.json
+    markdown_text = data.get('markdown', '')
+    template_id = data.get('template', '1') # Fallback to template 1
+    
+    # Save markdown to input.md
+    with open('input.md', 'w', encoding='utf-8') as file:
+        file.write(markdown_text)
+    
+    # Run dynamic C++ program with dynamic template identifier
+    try:
+        # Check running OS context (add .exe only if on windows context)
+        exe_path = './backend/main.exe' if os.name == 'nt' else './backend/main'
+        
+        # Pass template_id as a command line string parameter
+        subprocess.run([exe_path, str(template_id)], check=True)
+        
+        return {"status": "success", "message": f"Portfolio generated using Template {template_id}!"}, 200
+    except FileNotFoundError:
+        return {"status": "error", "message": "C++ program executable not found. Make sure to compile backend/main.cpp first!"}, 500
+    except subprocess.CalledProcessError:
+        return {
+            "status": "error", 
+            "message": "C++ program is saying that the structure of md is disturbed. Try reloading..."
+        }, 500
+    except Exception as e:
+        return {"status": "error", "message": str(e)}, 500
+
+if __name__ == '__main__':
+    app.run(port=8000, debug=False)
+```
+
+---
+
+## 5. PHASE 4: DESIGNING AND CREATING THE 15 PORTFOLIO TEMPLATES
+
+You must design and write 15 production-ready template HTML files inside the `templates/` folder, naming them `1.html`, `2.html`, ..., `15.html`.
+
+### 4.1. Universal Template Guidelines & Class Rules
+
+Every template HTML file must support the exact same 8 placeholder text blocks:
+- `[PROFILE_NAME]`
+- `[PROFILE_TITLE]`
+- `[PROFILE_BIO]`
+- `[PROFILE_QUOTE]`
+- `[SKILLS_CONTENT]`
+- `[SIDEBAR_PROJECTS_LIST]`
+- `[PROJECTS_CONTENT]`
+- `[CONTACT_CONTENT]`
+
+Furthermore, because the C++ engine dynamically injects raw html code with fixed class names into the placeholders, **your CSS stylesheets must style these specific classes** to render the matching template visual design:
+- `.skill-item` (Skill wrapper container)
+- `.skill-label` (Skill type label e.g., Languages)
+- `.skill-content` (Skill value description list)
+- `.nav-sublink` (Sidebar secondary link for project titles)
+- `.project-card` (Individually generated project card container)
+- `.project-title` (Project card main header)
+- `.project-desc` (Project card details paragraph)
+- `.project-tech` (Project technologies inline box)
+- `.project-link` (Source code hyperlink)
+- `.contact-link` (Wrapper chip for email, github, linkedin)
+- `.contact-label` (Contact type identifier e.g., Email)
+- `.contact-val` (Contact actual address / username value)
+
+Below are the complete standalone HTML blueprints for all 15 template files. Write each of these to their respective paths (`templates/1.html` through `templates/15.html`).
+
+---
+
+### 4.2. Template 1: Bento Box Grid (`templates/1.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME] - Bento Grid Portfolio</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0c0d0e;
+      --card: #161719;
+      --border: #282a2d;
+      --accent: #c8f04e;
+      --text: #ffffff;
+      --text-muted: #888888;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; padding: 40px 20px; }
+    .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(12, 1fr); gap: 20px; }
+    
+    .bento-card { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 32px; display: flex; flex-direction: column; transition: all 0.3s ease; }
+    .bento-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    
+    .hero-card { grid-column: span 8; }
+    .quote-card { grid-column: span 4; justify-content: center; align-items: center; text-align: center; border-left: 4px solid var(--accent); }
+    .bio-card { grid-column: span 6; }
+    .skills-card { grid-column: span 6; }
+    .projects-card { grid-column: span 12; }
+    .contact-card { grid-column: span 12; }
+
+    h1 { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; line-height: 1.1; margin-bottom: 8px; }
+    .title-tag { color: var(--accent); font-family: 'Syne', sans-serif; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    blockquote { font-style: italic; font-size: 1.3rem; line-height: 1.5; color: #fff; }
+    
+    .skills-list { display: flex; flex-direction: column; gap: 12px; list-style: none; width: 100%; }
+    .skill-item { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border); padding-bottom: 8px; }
+    .skill-label { font-weight: bold; color: var(--accent); }
+    .skill-content { color: var(--text-muted); }
+
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+    .project-card { background: rgba(255,255,255,0.02); border: 1px solid var(--border); border-radius: 10px; padding: 20px; display: flex; flex-direction: column; gap: 10px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; }
+    .project-desc { color: var(--text-muted); font-size: 0.85rem; }
+    .project-tech { font-family: monospace; font-size: 0.75rem; color: var(--accent); }
+    .project-link { color: var(--text); font-weight: bold; text-decoration: none; font-size: 0.8rem; margin-top: auto; }
+    .project-link:hover { text-decoration: underline; }
+
+    .contact-links { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
+    .contact-link { border: 1px solid var(--border); border-radius: 8px; padding: 12px 24px; color: var(--text); text-decoration: none; transition: 0.2s; display: flex; gap: 10px; }
+    .contact-link:hover { border-color: var(--accent); background: rgba(255,255,255,0.03); }
+    .contact-label { font-weight: bold; color: var(--accent); }
+
+    .sidebar-links { display: none; }
+
+    @media (max-width: 900px) {
+      .hero-card, .quote-card, .bio-card, .skills-card { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="bento-card hero-card">
+      <h1>[PROFILE_NAME]</h1>
+      <span class="title-tag">[PROFILE_TITLE]</span>
+    </div>
+    <div class="bento-card quote-card">
+      [PROFILE_QUOTE]
+    </div>
+    <div class="bento-card bio-card">
+      <h2 style="font-family:'Syne'; margin-bottom:12px;">Biography</h2>
+      <p style="color:var(--text-muted); line-height:1.6;">[PROFILE_BIO]</p>
+    </div>
+    <div class="bento-card skills-card">
+      <h2 style="font-family:'Syne'; margin-bottom:16px;">Core Expertise</h2>
+      <ul class="skills-list">
+        [SKILLS_CONTENT]
+      </ul>
+    </div>
+    <div class="bento-card projects-card">
+      <h2 style="font-family:'Syne';">Selected Projects</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+      <div style="display:none;">[SIDEBAR_PROJECTS_LIST]</div>
+    </div>
+    <div class="bento-card contact-card">
+      <h2 style="font-family:'Syne'; text-align:center; margin-bottom:20px;">Let's Connect</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.3. Template 2: Ultra-Minimalist Monochromatic (`templates/2.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #ffffff; color: #000000; font-family: 'Inter', sans-serif; line-height: 1.8; padding: 120px 40px; }
+    .container { max-width: 760px; margin: 0 auto; }
+    h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 400; margin-bottom: 10px; letter-spacing: -0.01em; }
+    .subtitle { font-size: 1.1rem; font-style: italic; color: #707070; margin-bottom: 50px; }
+    section { margin-bottom: 70px; padding-top: 40px; border-top: 1px solid #e0e0e0; }
+    h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 400; margin-bottom: 24px; }
+    p { margin-bottom: 20px; font-weight: 300; color: #333333; }
+    blockquote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.4rem; border-left: 2px solid #000; padding-left: 20px; margin: 30px 0; color: #555555; }
+    
+    .skills-list { list-style: none; }
+    .skill-item { margin-bottom: 16px; border-bottom: 1px dotted #ccc; padding-bottom: 8px; }
+    .skill-label { font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.1em; }
+    .skill-content { float: right; color: #666; font-size: 0.9rem; }
+    
+    .projects-list { display: flex; flex-direction: column; gap: 32px; }
+    .project-card { display: flex; flex-direction: column; }
+    .project-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 8px; }
+    .project-desc { color: #555; margin-bottom: 10px; }
+    .project-tech { font-size: 0.8rem; color: #888; font-family: monospace; }
+    .project-link { text-decoration: none; color: #000000; font-weight: 600; border-bottom: 1px solid #000; display: inline-block; width: max-content; margin-top: 12px; font-size: 0.85rem; }
+    .project-link:hover { color: #555; border-color: #555; }
+    
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #000; font-weight: 400; display: flex; justify-content: space-between; border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; }
+    .contact-link:hover { color: #707070; }
+    .contact-label { font-weight: 600; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header style="margin-bottom: 80px;">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="subtitle">[PROFILE_TITLE]</div>
+      <p style="font-size: 1.15rem; font-weight: 300;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </header>
+
+    <section id="skills">
+      <h2>Expertise</h2>
+      <div class="skills-list">
+        [SKILLS_CONTENT]
+      </div>
+    </section>
+
+    <section id="projects">
+      <h2>Works</h2>
+      <div class="projects-list">
+        [PROJECTS_CONTENT]
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2>Correspondence</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </section>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.4. Template 3: Cyberpunk & Neo-Brutalism (`templates/3.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME] // SECURE_NODE</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0b0914; color: #ffffff; font-family: 'DM Mono', monospace; padding: 50px 20px; }
+    .terminal-container { max-width: 900px; margin: 0 auto; border: 4px solid #000; background: #121020; box-shadow: 12px 12px 0px #000; padding: 40px; position: relative; }
+    .grid-lines { position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 32, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 4px, 6px 100%; pointer-events: none; }
+    
+    header { border-bottom: 4px solid #000; padding-bottom: 30px; margin-bottom: 40px; }
+    h1 { font-size: 3rem; color: #00ffcc; text-shadow: 0 0 10px rgba(0, 255, 204, 0.5); text-transform: uppercase; margin-bottom: 10px; }
+    .title-tag { color: #ff0055; font-size: 1.2rem; font-weight: bold; border: 2px solid #ff0055; display: inline-block; padding: 4px 12px; margin-bottom: 20px; }
+    blockquote { border: 2px solid #000; background: #0b0914; padding: 20px; box-shadow: 6px 6px 0px #ff0055; margin: 24px 0; color: #ff0055; }
+    
+    .section-title { font-size: 1.8rem; color: #ff0055; text-transform: uppercase; margin-bottom: 24px; border-bottom: 2px solid #000; padding-bottom: 8px; }
+    
+    .skill-item { background: #0b0914; border: 3px solid #000; padding: 15px; margin-bottom: 12px; box-shadow: 4px 4px 0 #00ffcc; display: flex; flex-direction: column; }
+    .skill-label { color: #00ffcc; text-transform: uppercase; font-size: 0.85rem; }
+    .skill-content { color: #ffffff; margin-top: 4px; }
+    
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+    .project-card { background: #0b0914; border: 3px solid #000; padding: 24px; box-shadow: 6px 6px 0px #000; transition: all 0.2s; }
+    .project-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0px #00ffcc; }
+    .project-title { font-size: 1.3rem; margin-bottom: 10px; color: #00ffcc; }
+    .project-tech { color: #ff0055; font-size: 0.8rem; margin: 10px 0; }
+    .project-link { color: #ffffff; text-decoration: none; border: 2px solid #ffffff; padding: 4px 10px; display: inline-block; font-size: 0.8rem; text-align: center; }
+    .project-link:hover { background: #ffffff; color: #0b0914; }
+    
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { background: #0b0914; border: 3px solid #000; padding: 16px; color: #ffffff; text-decoration: none; display: flex; justify-content: space-between; box-shadow: 4px 4px 0 #ff0055; }
+    .contact-link:hover { color: #00ffcc; box-shadow: 4px 4px 0 #00ffcc; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="terminal-container">
+    <div class="grid-lines"></div>
+    <header>
+      <h1>[PROFILE_NAME]</h1>
+      <div class="title-tag">[PROFILE_TITLE]</div>
+      <p style="font-size: 1rem; color: #a19fc9;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </header>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 40px;">
+      <div>
+        <h2 class="section-title">// SYSTEM_STATS</h2>
+        <div class="skills-list">
+          [SKILLS_CONTENT]
+        </div>
+      </div>
+      <div>
+        <h2 class="section-title">// CONTACTS</h2>
+        <div class="contact-links">
+          [CONTACT_CONTENT]
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title">// REPO_REGISTRY</h2>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.5. Template 4: Cinematic & Dark Mode (`templates/4.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: radial-gradient(circle at center, #1b1e22 0%, #060708 100%); color: #f3f4f6; font-family: 'Georgia', serif; line-height: 1.7; padding: 100px 20px; }
+    .container { max-width: 800px; margin: 0 auto; text-align: center; }
+    h1 { font-size: 3.5rem; font-weight: 300; letter-spacing: 0.1em; color: #ffffff; text-transform: uppercase; margin-bottom: 12px; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+    .title-tag { font-size: 1rem; font-style: italic; color: #b8860b; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 40px; }
+    .bio { font-size: 1.15rem; line-height: 1.8; color: #a3a9b0; margin-bottom: 40px; text-align: justify; text-align-last: center; }
+    blockquote { font-size: 1.4rem; color: #ffffff; border-top: 1px solid rgba(184, 134, 11, 0.3); border-bottom: 1px solid rgba(184, 134, 11, 0.3); padding: 24px 0; margin: 40px 0; font-style: italic; }
+    
+    .section-title { font-size: 1.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: #ffffff; margin: 60px 0 30px 0; position: relative; }
+    .section-title::after { content: ''; display: block; width: 40px; height: 1px; background: #b8860b; margin: 10px auto 0 auto; }
+    
+    .skills-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; text-align: left; }
+    .skill-item { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 20px; border-radius: 4px; }
+    .skill-label { color: #b8860b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: block; margin-bottom: 8px; }
+    
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; text-align: left; }
+    .project-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 32px; border-radius: 6px; transition: all 0.3s; }
+    .project-card:hover { border-color: #b8860b; background: rgba(255,255,255,0.04); }
+    .project-title { font-size: 1.25rem; font-weight: normal; margin-bottom: 12px; color: #ffffff; }
+    .project-desc { color: #a3a9b0; font-size: 0.9rem; margin-bottom: 16px; font-family: sans-serif; }
+    .project-tech { color: #b8860b; font-size: 0.75rem; font-family: monospace; }
+    .project-link { color: #ffffff; text-decoration: none; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; display: inline-block; margin-top: 16px; border-bottom: 1px solid rgba(255,255,255,0.3); }
+    .project-link:hover { border-color: #ffffff; }
+    
+    .contact-links { display: flex; justify-content: center; gap: 24px; flex-wrap: wrap; }
+    .contact-link { text-decoration: none; color: #a3a9b0; border: 1px solid rgba(255,255,255,0.1); padding: 12px 24px; border-radius: 4px; transition: all 0.3s; }
+    .contact-link:hover { border-color: #b8860b; color: #ffffff; background: rgba(184, 134, 11, 0.05); }
+    .contact-label { display: none; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>[PROFILE_NAME]</h1>
+      <div class="title-tag">[PROFILE_TITLE]</div>
+      <div class="bio">[PROFILE_BIO]</div>
+      [PROFILE_QUOTE]
+    </header>
+
+    <h2 class="section-title">Areas of Study</h2>
+    <div class="skills-list">
+      [SKILLS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Selected Works</h2>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Get In Touch</h2>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.6. Template 5: Scrollytelling Journey (`templates/5.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #050505; color: #e0e0e0; font-family: 'DM Sans', sans-serif; padding: 100px 20px; }
+    .timeline { position: relative; max-width: 800px; margin: 0 auto; padding: 40px 0; }
+    .timeline::after { content: ''; position: absolute; width: 2px; background: #4ef0c8; top: 0; bottom: 0; left: 50%; margin-left: -1px; }
+    
+    .container-node { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+    .container-node::after { content: ''; position: absolute; width: 16px; height: 16px; right: -8px; background-color: #050505; border: 4px solid #4ef0c8; top: 15px; border-radius: 50%; z-index: 1; }
+    
+    .left-node { left: 0; text-align: right; }
+    .right-node { left: 50%; }
+    .right-node::after { left: -8px; }
+    
+    .content-box { padding: 20px 30px; background: #111; border: 1px solid #222; border-radius: 6px; position: relative; }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 2.5rem; color: #ffffff; margin-bottom: 8px; }
+    .subtitle { color: #4ef0c8; font-weight: 500; margin-bottom: 16px; }
+    blockquote { font-style: italic; color: #888; border-right: 3px solid #4ef0c8; padding-right: 15px; margin: 15px 0; }
+    .left-node blockquote { border-right: none; border-left: 3px solid #4ef0c8; padding-left: 15px; }
+
+    .skill-item { margin-bottom: 8px; }
+    .skill-label { font-weight: bold; color: #4ef0c8; }
+    
+    .project-card { margin-bottom: 20px; text-align: left; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: #ffffff; }
+    .project-tech { font-family: monospace; color: #4ef0c8; font-size: 0.75rem; }
+    .project-link { color: #ffffff; text-decoration: none; font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid #4ef0c8; display: inline-block; margin-top: 10px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 10px; }
+    .contact-link { color: #e0e0e0; text-decoration: none; border: 1px solid #222; padding: 10px; border-radius: 4px; display: block; }
+    .contact-link:hover { border-color: #4ef0c8; }
+    .contact-label { color: #4ef0c8; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+    @media screen and (max-width: 600px) {
+      .timeline::after { left: 31px; }
+      .container-node { width: 100%; padding-left: 70px; padding-right: 25px; text-align: left !important; }
+      .container-node::after { left: 23px; }
+      .right-node { left: 0%; }
+      .left-node blockquote { border-left: 3px solid #4ef0c8; }
+    }
+  </style>
+</head>
+<body>
+  <div class="timeline">
+    <div class="container-node left-node">
+      <div class="content-box">
+        <h1>[PROFILE_NAME]</h1>
+        <p class="subtitle">[PROFILE_TITLE]</p>
+        <p>[PROFILE_BIO]</p>
+      </div>
+    </div>
+    
+    <div class="container-node right-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:10px;">Objective Quote</h3>
+        [PROFILE_QUOTE]
+      </div>
+    </div>
+
+    <div class="container-node left-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:15px;">Key Skills</h3>
+        [SKILLS_CONTENT]
+      </div>
+    </div>
+
+    <div class="container-node right-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:15px;">Works Completed</h3>
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="container-node left-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:15px;">Get Connected</h3>
+        <div class="contact-links">
+          [CONTACT_CONTENT]
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.7. Template 6: Bold Typography-Driven (`templates/6.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0e0d0c; color: #f5f2eb; font-family: 'Inter', sans-serif; padding: 80px 20px; }
+    .wrapper { max-width: 1000px; margin: 0 auto; }
+    h1 { font-family: 'Syne', sans-serif; font-size: 7.5vw; line-height: 0.9; text-transform: uppercase; font-weight: 900; margin-bottom: 24px; -webkit-text-stroke: 1.5px #f5f2eb; color: transparent; transition: color 0.3s; }
+    h1:hover { color: #f5f2eb; }
+    .hero-title { font-family: 'Syne', sans-serif; font-size: 2rem; color: #e65c00; text-transform: uppercase; margin-bottom: 30px; }
+    .desc { font-size: 1.3rem; line-height: 1.6; max-width: 800px; margin-bottom: 40px; font-weight: 300; }
+    blockquote { font-family: 'Syne', sans-serif; font-size: 1.6rem; text-transform: uppercase; border-left: 6px solid #e65c00; padding-left: 20px; margin: 40px 0; color: #e65c00; }
+    
+    .section-title { font-family: 'Syne', sans-serif; font-size: 3rem; text-transform: uppercase; color: #f5f2eb; margin: 80px 0 30px 0; border-bottom: 3px solid #e65c00; padding-bottom: 10px; }
+    
+    .skill-item { display: flex; flex-direction: column; margin-bottom: 20px; }
+    .skill-label { font-family: 'Syne', sans-serif; font-size: 1.2rem; text-transform: uppercase; color: #e65c00; }
+    .skill-content { font-size: 1.1rem; color: #f5f2eb; font-weight: 300; }
+    
+    .projects-grid { display: flex; flex-direction: column; gap: 40px; }
+    .project-card { border-bottom: 1px solid rgba(245,242,235,0.1); padding-bottom: 30px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; text-transform: uppercase; margin-bottom: 10px; }
+    .project-desc { color: #aaa; margin-bottom: 15px; font-size: 1rem; }
+    .project-tech { font-family: monospace; color: #e65c00; }
+    .project-link { text-decoration: none; color: #f5f2eb; font-weight: bold; background: #e65c00; padding: 8px 18px; display: inline-block; margin-top: 15px; text-transform: uppercase; font-size: 0.8rem; }
+    
+    .contact-links { display: flex; flex-direction: column; gap: 15px; }
+    .contact-link { text-decoration: none; color: #f5f2eb; font-size: 1.3rem; font-family: 'Syne', sans-serif; text-transform: uppercase; display: flex; justify-content: space-between; border-bottom: 1px dashed rgba(245,242,235,0.2); padding-bottom: 10px; }
+    .contact-link:hover { color: #e65c00; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <header>
+      <h1>[PROFILE_NAME]</h1>
+      <div class="hero-title">[PROFILE_TITLE]</div>
+      <p class="desc">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </header>
+
+    <h2 class="section-title">Core Capability</h2>
+    <div>
+      [SKILLS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Built Systems</h2>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Communications</h2>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.8. Template 7: Gamified Retro Arcade (8-bit) (`templates/7.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEVEL 99 - [PROFILE_NAME]</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #000000; color: #ffffff; font-family: 'Courier New', Courier, monospace; padding: 40px 20px; line-height: 1.6; }
+    .screen { max-width: 780px; margin: 0 auto; border: 6px double #ffffff; padding: 30px; background: #000000; }
+    
+    .banner { text-align: center; border-bottom: 4px dashed #ffffff; padding-bottom: 20px; margin-bottom: 30px; }
+    h1 { font-size: 2.2rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
+    .role-badge { color: #00ff00; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; display: block; }
+    
+    blockquote { border: 2px solid #ffffff; padding: 15px; margin: 20px 0; background: #111; font-style: italic; }
+    .section-title { font-size: 1.4rem; border-left: 8px solid #00ff00; padding-left: 10px; margin: 40px 0 20px 0; text-transform: uppercase; }
+    
+    .skill-item { border: 2px solid #ffffff; padding: 12px; margin-bottom: 10px; }
+    .skill-label { font-weight: bold; color: #00ff00; text-transform: uppercase; }
+    
+    .projects-grid { display: flex; flex-direction: column; gap: 20px; }
+    .project-card { border: 2px solid #ffffff; padding: 20px; position: relative; }
+    .project-title { font-size: 1.2rem; text-transform: uppercase; margin-bottom: 8px; color: #00ff00; }
+    .project-desc { color: #ccc; margin-bottom: 12px; font-size: 0.9rem; }
+    .project-tech { font-weight: bold; font-size: 0.85rem; }
+    .project-link { color: #000000; background: #ffffff; text-decoration: none; font-weight: bold; padding: 4px 12px; display: inline-block; margin-top: 10px; }
+    .project-link:hover { background: #00ff00; }
+    
+    .contact-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 2px solid #ffffff; padding: 10px; text-align: center; display: block; }
+    .contact-link:hover { border-color: #00ff00; color: #00ff00; }
+    .contact-label { display: block; font-weight: bold; margin-bottom: 4px; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div class="banner">
+      <h1>[PROFILE_NAME]</h1>
+      <span class="role-badge">CLASS: [PROFILE_TITLE]</span>
+      <p style="font-size: 0.95rem;">[PROFILE_BIO]</p>
+    </div>
+
+    [PROFILE_QUOTE]
+
+    <div class="section-title">Attributes (Skills)</div>
+    [SKILLS_CONTENT]
+
+    <div class="section-title">Quest Log (Projects)</div>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <div class="section-title">Save Point (Contact)</div>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.9. Template 8: Horizontal Scrolling Layout (`templates/8.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #121212; color: #ffffff; font-family: 'DM Sans', sans-serif; overflow-y: hidden; }
+    .horizontal-scroll-container { display: flex; flex-wrap: nowrap; overflow-x: auto; width: 100vw; height: 100vh; scroll-snap-type: x mandatory; }
+    
+    section { flex: 0 0 100vw; height: 100vh; scroll-snap-align: start; padding: 100px 80px; display: flex; flex-direction: column; justify-content: center; border-right: 1px solid #222; }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 4rem; text-transform: uppercase; margin-bottom: 12px; line-height: 1; }
+    .subtitle { color: #e5ff00; font-family: 'Syne', sans-serif; font-size: 1.5rem; text-transform: uppercase; margin-bottom: 24px; }
+    .bio { max-width: 600px; color: #aaa; font-size: 1.1rem; line-height: 1.6; }
+    blockquote { border-left: 4px solid #e5ff00; padding-left: 20px; font-style: italic; margin-top: 20px; max-width: 500px; font-size: 1.2rem; }
+    
+    .section-title { font-family: 'Syne', sans-serif; font-size: 2.2rem; text-transform: uppercase; color: #e5ff00; margin-bottom: 40px; }
+    
+    .skills-wrapper { display: flex; flex-direction: column; gap: 20px; max-width: 600px; }
+    .skill-item { border-bottom: 1px solid #333; padding-bottom: 12px; }
+    .skill-label { font-family: 'Syne', sans-serif; text-transform: uppercase; color: #e5ff00; font-weight: bold; }
+    
+    .projects-wrapper { display: flex; gap: 24px; overflow-x: auto; padding-bottom: 20px; width: 100%; }
+    .project-card { flex: 0 0 350px; background: #1f1f1f; padding: 30px; border-radius: 8px; border: 1px solid #333; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; margin-bottom: 10px; }
+    .project-desc { color: #aaa; font-size: 0.9rem; margin-bottom: 16px; }
+    .project-tech { font-family: monospace; color: #e5ff00; font-size: 0.8rem; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #e5ff00; display: inline-block; margin-top: 12px; }
+
+    .contact-wrapper { display: flex; flex-direction: column; gap: 16px; max-width: 500px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid #333; padding: 16px; display: flex; justify-content: space-between; border-radius: 6px; }
+    .contact-link:hover { border-color: #e5ff00; }
+    .contact-label { color: #e5ff00; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="horizontal-scroll-container">
+    <section id="hero">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="subtitle">[PROFILE_TITLE]</div>
+      <p class="bio">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </section>
+
+    <section id="skills">
+      <h2 class="section-title">Capabilities</h2>
+      <div class="skills-wrapper">
+        [SKILLS_CONTENT]
+      </div>
+    </section>
+
+    <section id="projects" style="flex: 0 0 120vw;">
+      <h2 class="section-title">Projects Built</h2>
+      <div class="projects-wrapper">
+        [PROJECTS_CONTENT]
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="contact-wrapper">
+        [CONTACT_CONTENT]
+      </div>
+    </section>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.10. Template 9: Split-Screen Layout (`templates/9.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0d0f12; color: #e8eaf0; font-family: 'DM Sans', sans-serif; display: flex; min-height: 100vh; }
+    
+    .left-side { width: 40%; height: 100vh; position: fixed; top: 0; left: 0; background: #15181f; border-right: 1px solid #252a34; padding: 80px 40px; display: flex; flex-direction: column; justify-content: center; }
+    .right-side { width: 60%; margin-left: 40%; padding: 80px 60px; overflow-y: auto; }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 3rem; font-weight: 800; color: #ffffff; line-height: 1.1; margin-bottom: 12px; }
+    .subtitle { color: #c8f04e; font-family: 'Syne', sans-serif; font-size: 1.2rem; text-transform: uppercase; margin-bottom: 24px; }
+    blockquote { font-style: italic; color: #8b949e; border-left: 3px solid #c8f04e; padding-left: 16px; margin: 24px 0; }
+    
+    section { margin-bottom: 60px; padding-bottom: 40px; border-bottom: 1px solid #252a34; }
+    section:last-of-type { border-bottom: none; }
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 24px; color: #ffffff; }
+    
+    .skill-item { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .skill-label { font-weight: bold; color: #c8f04e; text-transform: uppercase; font-size: 0.85rem; }
+    .skill-content { color: #8b949e; margin-top: 4px; }
+    
+    .projects-grid { grid-template-columns: 1fr; gap: 24px; }
+    .project-card { background: #15181f; border: 1px solid #252a34; border-radius: 8px; padding: 24px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.3rem; margin-bottom: 8px; color: #ffffff; }
+    .project-desc { color: #8b949e; font-size: 0.95rem; margin-bottom: 16px; }
+    .project-tech { font-family: monospace; color: #c8f04e; font-size: 0.8rem; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #c8f04e; display: inline-block; margin-top: 12px; font-size: 0.85rem; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid #252a34; padding: 14px; display: flex; justify-content: space-between; border-radius: 6px; }
+    .contact-link:hover { border-color: #c8f04e; }
+    .contact-label { color: #c8f04e; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+    @media (max-width: 900px) {
+      body { flex-direction: column; }
+      .left-side { width: 100%; height: auto; position: relative; padding: 60px 20px; }
+      .right-side { width: 100%; margin-left: 0; padding: 60px 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="left-side">
+    <h1>[PROFILE_NAME]</h1>
+    <div class="subtitle">[PROFILE_TITLE]</div>
+    <p style="color:#8b949e;">[PROFILE_BIO]</p>
+    [PROFILE_QUOTE]
+  </div>
+  
+  <div class="right-side">
+    <section id="skills">
+      <h2 class="section-title">Core Expertise</h2>
+      [SKILLS_CONTENT]
+    </section>
+
+    <section id="projects">
+      <h2 class="section-title">Recent Developments</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </section>
+
+    <section id="contact">
+      <h2 class="section-title">Get In Touch</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </section>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.11. Template 10: Neumorphism & Soft Shadows (`templates/10.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #e0e0e0; color: #333333; font-family: 'DM Sans', sans-serif; padding: 60px 20px; }
+    .container { max-width: 800px; margin: 0 auto; }
+    
+    .neumorphic-panel { background: #e0e0e0; border-radius: 20px; box-shadow: 9px 9px 16px #bebebe, -9px -9px 16px #ffffff; padding: 40px; margin-bottom: 40px; }
+    .neumorphic-inset { background: #e0e0e0; border-radius: 12px; box-shadow: inset 5px 5px 10px #bebebe, inset -5px -5px 10px #ffffff; padding: 24px; margin: 20px 0; }
+    
+    h1 { font-size: 2.8rem; font-weight: 700; color: #222222; margin-bottom: 8px; }
+    .title-role { font-size: 1.1rem; color: #666; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+    
+    blockquote { font-style: italic; color: #555; border-left: 3px solid #888; padding-left: 15px; margin: 20px 0; }
+    
+    .section-title { font-size: 1.5rem; font-weight: 700; color: #222222; margin: 40px 0 20px 0; }
+    
+    .skill-item { background: #e0e0e0; border-radius: 10px; box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff; padding: 16px 24px; margin-bottom: 16px; display: flex; justify-content: space-between; }
+    .skill-label { font-weight: bold; color: #222222; }
+    
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; }
+    .project-card { background: #e0e0e0; border-radius: 14px; box-shadow: 6px 6px 12px #bebebe, -6px -6px 12px #ffffff; padding: 24px; display: flex; flex-direction: column; }
+    .project-title { font-size: 1.2rem; color: #222222; margin-bottom: 8px; }
+    .project-desc { color: #555555; font-size: 0.9rem; margin-bottom: 16px; }
+    .project-tech { font-family: monospace; font-size: 0.8rem; font-weight: bold; color: #666; }
+    .project-link { text-decoration: none; color: #222; font-weight: bold; border-radius: 8px; padding: 8px 16px; background: #e0e0e0; box-shadow: 3px 3px 6px #bebebe, -3px -3px 6px #ffffff; margin-top: auto; display: inline-block; width: max-content; }
+    .project-link:active { box-shadow: inset 2px 2px 5px #bebebe, inset -2px -2px 5px #ffffff; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 16px; }
+    .contact-link { text-decoration: none; color: #333333; background: #e0e0e0; border-radius: 10px; box-shadow: 4px 4px 8px #bebebe, -4px -4px 8px #ffffff; padding: 16px; display: flex; justify-content: space-between; }
+    .contact-link:active { box-shadow: inset 3px 3px 6px #bebebe, inset -3px -3px 6px #ffffff; }
+    .contact-label { font-weight: bold; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="neumorphic-panel">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="title-role">[PROFILE_TITLE]</div>
+      <div class="neumorphic-inset">
+        <p style="line-height: 1.6;">[PROFILE_BIO]</p>
+      </div>
+      [PROFILE_QUOTE]
+    </div>
+
+    <h2 class="section-title">System Attributes</h2>
+    [SKILLS_CONTENT]
+
+    <h2 class="section-title">Selected Projects</h2>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Contact Information</h2>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.12. Template 11: Milestone / Timeline Grid (`templates/11.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0f172a; color: #f8fafc; font-family: 'DM Sans', sans-serif; padding: 80px 20px; }
+    .timeline-container { max-width: 800px; margin: 0 auto; position: relative; }
+    .timeline-container::before { content: ''; position: absolute; left: 20px; top: 0; bottom: 0; width: 2px; background: #3b82f6; }
+    
+    .timeline-section { position: relative; margin-bottom: 50px; padding-left: 50px; }
+    .timeline-marker { position: absolute; left: 11px; top: 5px; width: 20px; height: 20px; border-radius: 50%; background: #0f172a; border: 4px solid #3b82f6; z-index: 2; }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 2.8rem; margin-bottom: 8px; }
+    .role-title { color: #3b82f6; font-weight: bold; margin-bottom: 20px; }
+    blockquote { font-style: italic; color: #94a3b8; border-left: 3px solid #3b82f6; padding-left: 15px; margin: 20px 0; }
+    
+    .card { background: #1e293b; border-radius: 8px; padding: 24px; border-left: 4px solid #3b82f6; }
+    
+    .skill-item { display: inline-block; background: #1e293b; border: 1px solid #3b82f6; border-radius: 20px; padding: 8px 16px; margin: 6px; }
+    .skill-label { font-weight: bold; color: #3b82f6; margin-right: 6px; }
+    
+    .projects-grid { display: flex; flex-direction: column; gap: 20px; }
+    .project-card { background: #1e293b; padding: 24px; border-radius: 8px; border: 1px solid #334155; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; margin-bottom: 8px; }
+    .project-desc { color: #94a3b8; margin-bottom: 12px; }
+    .project-tech { font-family: monospace; color: #3b82f6; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #3b82f6; display: inline-block; margin-top: 10px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 10px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid #334155; padding: 12px; display: flex; justify-content: space-between; border-radius: 6px; }
+    .contact-label { color: #3b82f6; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="timeline-container">
+    <div class="timeline-section">
+      <div class="timeline-marker"></div>
+      <div class="card">
+        <h1>[PROFILE_NAME]</h1>
+        <div class="role-title">[PROFILE_TITLE]</div>
+        <p style="color:#94a3b8; line-height: 1.6;">[PROFILE_BIO]</p>
+        [PROFILE_QUOTE]
+      </div>
+    </div>
+
+    <div class="timeline-section">
+      <div class="timeline-marker"></div>
+      <h2 style="font-family:'Syne'; margin-bottom:20px;">Skills & Competence</h2>
+      <div class="skills-list">
+        [SKILLS_CONTENT]
+      </div>
+    </div>
+
+    <div class="timeline-section">
+      <div class="timeline-marker"></div>
+      <h2 style="font-family:'Syne'; margin-bottom:20px;">Built Timeline</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="timeline-section">
+      <div class="timeline-marker"></div>
+      <h2 style="font-family:'Syne'; margin-bottom:20px;">Correspondence</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.13. Template 12: Dynamic Cursor Glow & Ambient Particles (`templates/12.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0b0c10; color: #c5c6c7; font-family: 'DM Mono', monospace; padding: 60px 20px; overflow-x: hidden; position: relative; min-height: 100vh; }
+    
+    .glow-aura { position: fixed; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(102, 252, 241, 0.08) 0%, rgba(102,252,241,0) 70%); top: var(--y, 0px); left: var(--x, 0px); transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
+    
+    .container { max-width: 800px; margin: 0 auto; position: relative; z-index: 2; }
+    .card { background: rgba(31, 40, 51, 0.4); border: 1px solid rgba(102, 252, 241, 0.2); border-radius: 12px; padding: 32px; margin-bottom: 30px; backdrop-filter: blur(4px); }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 3rem; color: #ffffff; margin-bottom: 8px; }
+    .title-tag { color: #66fcf1; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 24px; }
+    blockquote { border-left: 4px solid #66fcf1; padding-left: 16px; margin: 20px 0; color: #ffffff; font-style: italic; }
+    
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; color: #ffffff; margin-bottom: 24px; }
+    
+    .skill-item { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .skill-label { color: #66fcf1; font-weight: bold; }
+    
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .project-card { background: rgba(31, 40, 51, 0.6); border: 1px solid rgba(102, 252, 241, 0.1); border-radius: 8px; padding: 24px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; color: #ffffff; margin-bottom: 8px; }
+    .project-tech { color: #66fcf1; font-size: 0.8rem; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #66fcf1; display: inline-block; margin-top: 12px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid rgba(102, 252, 241, 0.2); padding: 14px; display: flex; justify-content: space-between; border-radius: 6px; }
+    .contact-link:hover { border-color: #66fcf1; }
+    .contact-label { color: #66fcf1; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="glow-aura" id="aura"></div>
+  
+  <div class="container">
+    <div class="card">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="title-tag">[PROFILE_TITLE]</div>
+      <p style="line-height: 1.6;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Capabilities</h2>
+      [SKILLS_CONTENT]
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Built Repositories</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Communications</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+
+  <script>
+    const aura = document.getElementById('aura');
+    document.addEventListener('mousemove', (e) => {
+      aura.style.setProperty('--x', e.clientX + 'px');
+      aura.style.setProperty('--y', e.clientY + 'px');
+    });
+  </script>
+</body>
+</html>
+```
+
+---
+
+### 4.14. Template 13: Editorial Magazine Style (`templates/13.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME] - Editorial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fbfaf7; color: #1c1b18; font-family: 'Lora', Georgia, serif; padding: 60px 20px; line-height: 1.6; }
+    .sheet { max-width: 900px; margin: 0 auto; border: 1px solid #c8c5bc; padding: 40px; }
+    
+    header { border-bottom: 3px double #1c1b18; padding-bottom: 24px; text-align: center; margin-bottom: 30px; }
+    .issue-date { font-family: sans-serif; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; border-bottom: 1px solid #1c1b18; padding-bottom: 6px; margin-bottom: 20px; display: flex; justify-content: space-between; }
+    
+    h1 { font-family: 'Playfair Display', serif; font-size: 3.5rem; font-weight: 900; letter-spacing: -1px; line-height: 1; text-transform: uppercase; margin-bottom: 10px; }
+    .subtitle { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-style: italic; color: #8b2635; margin-bottom: 16px; }
+    
+    blockquote { font-family: 'Playfair Display', serif; font-style: italic; font-size: 1.3rem; text-align: center; border-top: 1px solid #1c1b18; border-bottom: 1px solid #1c1b18; padding: 16px 0; margin: 24px 0; }
+    
+    .news-columns { display: flex; gap: 32px; margin-bottom: 30px; }
+    .col { flex: 1; }
+    
+    .section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; text-transform: uppercase; border-bottom: 2px solid #1c1b18; padding-bottom: 4px; margin-bottom: 20px; color: #8b2635; }
+    
+    .skill-item { margin-bottom: 14px; border-bottom: 1px solid #c8c5bc; padding-bottom: 6px; }
+    .skill-label { font-weight: bold; font-family: sans-serif; font-size: 0.8rem; text-transform: uppercase; }
+    
+    .project-card { border-bottom: 1px dashed #c8c5bc; padding-bottom: 20px; margin-bottom: 20px; }
+    .project-title { font-family: 'Playfair Display', serif; font-size: 1.30rem; font-weight: bold; margin-bottom: 6px; }
+    .project-tech { font-family: monospace; font-size: 0.8rem; color: #8b2635; margin: 6px 0; }
+    .project-link { text-decoration: none; color: #1c1b18; font-weight: bold; font-size: 0.85rem; border-bottom: 1px solid #1c1b18; display: inline-block; margin-top: 8px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 10px; }
+    .contact-link { text-decoration: none; color: #1c1b18; border-bottom: 1px solid #c8c5bc; padding-bottom: 8px; display: flex; justify-content: space-between; }
+    .contact-label { font-weight: bold; font-family: sans-serif; font-size: 0.8rem; }
+    
+    .hidden-data { display: none; }
+    @media (max-width: 700px) {
+      .news-columns { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="sheet">
+    <header>
+      <div class="issue-date">
+        <span>VOL. I &bull; NO. 15</span>
+        <span>PORTIFY DAILY EXPRESS</span>
+        <span>2026 EDITION</span>
+      </div>
+      <h1>[PROFILE_NAME]</h1>
+      <div class="subtitle">[PROFILE_TITLE]</div>
+    </header>
+
+    <div class="news-columns">
+      <div class="col" style="flex: 1.5;">
+        <p style="font-size: 1.05rem; text-align: justify; margin-bottom: 20px;">[PROFILE_BIO]</p>
+        [PROFILE_QUOTE]
+      </div>
+      
+      <div class="col">
+        <h2 class="section-title">Special Skills</h2>
+        [SKILLS_CONTENT]
+      </div>
+    </div>
+
+    <h2 class="section-title">Featured Chronicles</h2>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <h2 class="section-title">Correspondence</h2>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.15. Template 14: Glassmorphism & Aurora Glows (`templates/14.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0c0c14; color: #ffffff; font-family: 'DM Sans', sans-serif; padding: 80px 20px; overflow-x: hidden; position: relative; min-height: 100vh; }
+    
+    .blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.4; z-index: 1; }
+    .blob1 { width: 300px; height: 300px; background: #8b5cf6; top: 10%; left: 10%; }
+    .blob2 { width: 400px; height: 400px; background: #ec4899; bottom: 10%; right: 10%; }
+    
+    .container { max-width: 850px; margin: 0 auto; position: relative; z-index: 2; }
+    
+    .glass-card { background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 36px; margin-bottom: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 3.2rem; line-height: 1.1; margin-bottom: 8px; }
+    .role-title { font-family: 'Syne', sans-serif; color: #ec4899; font-size: 1.15rem; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em; }
+    blockquote { font-style: italic; color: #cbd5e1; border-left: 4px solid #8b5cf6; padding-left: 16px; margin: 24px 0; background: rgba(255,255,255,0.02); padding: 16px; border-radius: 0 10px 10px 0; }
+    
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; margin-bottom: 24px; }
+    
+    .skill-item { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .skill-label { font-weight: bold; color: #ec4899; }
+    .skill-content { color: #94a3b8; }
+    
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+    .project-card { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 24px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; margin-bottom: 8px; }
+    .project-desc { color: #cbd5e1; font-size: 0.9rem; margin-bottom: 16px; }
+    .project-tech { font-family: monospace; color: #8b5cf6; font-size: 0.8rem; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #ec4899; display: inline-block; margin-top: 12px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid rgba(255,255,255,0.05); padding: 14px; display: flex; justify-content: space-between; border-radius: 8px; background: rgba(255,255,255,0.01); }
+    .contact-link:hover { border-color: #8b5cf6; background: rgba(255,255,255,0.03); }
+    .contact-label { color: #ec4899; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  
+  <div class="container">
+    <div class="glass-card">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="role-title">[PROFILE_TITLE]</div>
+      <p style="color:#cbd5e1; line-height: 1.6;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </div>
+
+    <div class="glass-card">
+      <h2 class="section-title">Capabilities</h2>
+      [SKILLS_CONTENT]
+    </div>
+
+    <div class="glass-card">
+      <h2 class="section-title">Featured Developments</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="glass-card">
+      <h2 class="section-title">Contact</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+### 4.16. Template 15: Creative Developer Terminal (`templates/15.html`)
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>guest@portify: ~</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #06090f; color: #5af78e; font-family: 'DM Mono', monospace; padding: 40px 20px; line-height: 1.5; }
+    .terminal { max-width: 800px; margin: 0 auto; border: 1px solid #1a2333; background: #0a0e14; padding: 30px; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    
+    .top-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #1a2333; padding-bottom: 12px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .red { background: #ff5f56; }
+    .yellow { background: #ffbd2e; }
+    .green { background: #27c93f; }
+    
+    .prompt { color: #f3f99d; margin-right: 8px; }
+    .cmd-line { display: flex; margin-bottom: 12px; }
+    .output-block { margin-bottom: 30px; padding-left: 10px; color: #ffffff; }
+    
+    h1 { font-size: 1.8rem; color: #5af78e; }
+    blockquote { border-left: 3px solid #f3f99d; padding-left: 15px; margin: 15px 0; color: #f3f99d; font-style: italic; }
+    
+    .skill-item { margin-bottom: 10px; }
+    .skill-label { color: #f3f99d; font-weight: bold; }
+    
+    .projects-grid { display: flex; flex-direction: column; gap: 20px; }
+    .project-card { border: 1px solid #1a2333; padding: 16px; background: #0c1017; }
+    .project-title { font-size: 1.1rem; color: #5af78e; margin-bottom: 6px; }
+    .project-tech { color: #f3f99d; font-size: 0.8rem; }
+    .project-link { color: #ffffff; font-weight: bold; text-decoration: none; border: 1px solid #5af78e; padding: 2px 8px; display: inline-block; margin-top: 10px; font-size: 0.75rem; }
+    
+    .contact-links { display: flex; flex-direction: column; gap: 8px; }
+    .contact-link { text-decoration: none; color: #ffffff; display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #1a2333; }
+    .contact-label { color: #f3f99d; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="terminal">
+    <div class="top-bar">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
+      <span style="color:#556880; font-size:0.8rem; margin-left:10px;">guest@portify-node: ~</span>
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>cat profile.json</span>
+    </div>
+    <div class="output-block">
+      <h1>[PROFILE_NAME]</h1>
+      <p style="color:#8899a6; font-size:0.95rem; margin-top:8px;">// [PROFILE_TITLE]</p>
+      <p style="margin-top:12px;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>list --skills</span>
+    </div>
+    <div class="output-block" style="color: #5af78e;">
+      [SKILLS_CONTENT]
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>cat projects_log.txt</span>
+    </div>
+    <div class="output-block">
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>finger dev</span>
+    </div>
+    <div class="output-block">
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>
+```
+
+---
+
+## 6. PHASE 5: UPDATING THE `readme.md` FILE
+
+Update the `readme.md` file in the root directory to document the multi-template systems. Make the descriptions clean, structured, and informative. Ensure it does not look like generic generated text, but rather a proper engineering log.
+
+Include the following updates:
+- **Program Flow and Logic update**: Explain how the chosen template number is selected on `templates.html`, saved in the browser’s `localStorage`, sent as a key-value in the JSON body of `/generate`, passed down from `server.py` to the compiled `main.exe` via dynamic execution arguments, and used by the base `Portfolio` class to load the corresponding template file.
+- **Tech Stack & Concepts update**: Document the static class layout variables in C++ OOP used to determine paths, the Flask API routing updates, and the `localStorage` data syncing.
+- **Run Instructions update**:
+  - Update compiling instructions to specify how the agent should build/run.
+  - Document the manual template parameters for C++ testing: `./backend/main.exe <template_id>`.
+
+---
+
+## 7. PHASE 6: TESTING, COMPILATION, AND VERIFICATION CHECKLIST
+
+Ensure you execute and double-check the following parameters:
+
+- [ ] **C++ OOP Engine Compilation**:
+  Run this command to test C++ compilation:
+  ```powershell
+  cd backend
+  g++ main.cpp -o main.exe
+  cd ..
+  ```
+  Ensure there are no compilation errors or linker warnings.
+
+- [ ] **Verify command line parameter logic**:
+  Run the compiled binary directly passing templates:
+  ```powershell
+  ./backend/main.exe 3
+  ```
+  Check that the file `output/index.html` is generated successfully and conforms to the styling of Template 3 (Cyberpunk).
+
+- [ ] **Start the Flask Server**:
+  Run `python server.py`. Make sure the server runs on port 8000.
+  Open the web interface `http://127.0.0.1:8000/`.
+
+- [ ] **Verify Navigation Flow**:
+  - Click on the navigation buttons to visit `frontend.html` (Editor), `templates.html` (Templates Selection), and `about.html` (About Developers).
+  - Verify that the theme toggles correctly across all three pages and persists after reloading the pages.
+  - Go to `templates.html`, select Template 14 (Glassmorphism), navigate back to the Editor, and click **Run**. Verify that the preview updates inside the iframe.
+  - Click **Download** and check that the generated file downloads as a local HTML file.
+
+Ensure that all tasks are executed without breaking any placeholders. If any error is encountered, check paths and exit statuses. Good luck!
+================================================================================

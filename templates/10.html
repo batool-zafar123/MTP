@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your Full Name</title>
+  <title>[PROFILE_NAME]</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -42,66 +42,30 @@
 <body>
   <div class="container">
     <div class="neumorphic-panel">
-      <h1>Your Full Name</h1>
-      <div class="title-role">Your Professional Title, e.g., Software Engineer</div>
+      <h1>[PROFILE_NAME]</h1>
+      <div class="title-role">[PROFILE_TITLE]</div>
       <div class="neumorphic-inset">
-        <p style="line-height: 1.6;">Write a short introduction about yourself, your background, and your goals.</p>
+        <p style="line-height: 1.6;">[PROFILE_BIO]</p>
       </div>
-      Insert a personal quote, philosophy, or objective statement.
+      [PROFILE_QUOTE]
     </div>
 
     <h2 class="section-title">System Attributes</h2>
-    
-                <li class="skill-item">
-                <span class="skill-label">Languages</span>
-                <span class="skill-content">List your programming languages, e.g., C++, Java, Python</span>
-                </li>
-                
-                <li class="skill-item">
-                <span class="skill-label">Tools</span>
-                <span class="skill-content">List your tools, e.g., Git, VS Code, Linux</span>
-                </li>
-                
-                <li class="skill-item">
-                <span class="skill-label">Concepts</span>
-                <span class="skill-content">List key concepts, e.g., OOP, Data Structures, Web Development</span>
-                </li>
-                
+    [SKILLS_CONTENT]
 
     <h2 class="section-title">Selected Projects</h2>
     <div class="projects-grid">
-      <div class="project-card" id="project-1">
-                        <h3 class="project-title">Title of your project.</h3>
-                        <p class="project-desc">Brief description of what the project does and your role in it.</p>
-                        <div class="project-tech">Languages, tools, or concepts used, e.g., C++, OOP</div>
-                        <a href="paste_actual_link_in_these_brackets" class="project-link" target="_blank">View Source</a>
-                        </div>
-                        <div class="project-card" id="project-2">
-                        <h3 class="project-title">Title of your project.</h3>
-                        <p class="project-desc">Brief description of what the project does and your role in it.</p>
-                        <div class="project-tech">Languages, tools, or concepts used, e.g., C++, OOP</div>
-                        <a href="paste_actual_link_in_these_brackets" class="project-link" target="_blank">View Source</a>
-                        </div>
-                        
+      [PROJECTS_CONTENT]
     </div>
 
     <h2 class="section-title">Contact Information</h2>
     <div class="contact-links">
-      <a href="your.email@example.com" class="contact-link" target="_blank">
-                <span class="contact-label">Email</span>
-                <span class="contact-val">your.email@example.com</span>
-                </a><a href="github.com/yourusername" class="contact-link" target="_blank">
-                <span class="contact-label">GitHub</span>
-                <span class="contact-val">github.com/yourusername</span>
-                </a><a href="linkedin.com/in/yourusername" class="contact-link" target="_blank">
-                <span class="contact-label">LinkedIn</span>
-                <span class="contact-val">linkedin.com/in/yourusername</span>
-                </a>
+      [CONTACT_CONTENT]
     </div>
   </div>
   
   <div class="hidden-data">
-    <a href="#project-1" class="nav-sublink">Title of your project.</a><a href="#project-2" class="nav-sublink">Title of your project.</a>
+    [SIDEBAR_PROJECTS_LIST]
   </div>
 </body>
 </html>

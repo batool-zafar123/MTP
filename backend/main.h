@@ -14,6 +14,8 @@ public:
 
     static int start;
     static int end;
+    
+    static string templatePath;
 
     Portfolio();
 

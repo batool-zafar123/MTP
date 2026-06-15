@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LEVEL 99 - [PROFILE_NAME]</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #000000; color: #ffffff; font-family: 'Courier New', Courier, monospace; padding: 40px 20px; line-height: 1.6; }
+    .screen { max-width: 780px; margin: 0 auto; border: 6px double #ffffff; padding: 30px; background: #000000; }
+    
+    .banner { text-align: center; border-bottom: 4px dashed #ffffff; padding-bottom: 20px; margin-bottom: 30px; }
+    h1 { font-size: 2.2rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 2px; }
+    .role-badge { color: #00ff00; font-size: 1.1rem; font-weight: bold; margin-bottom: 15px; display: block; }
+    
+    blockquote { border: 2px solid #ffffff; padding: 15px; margin: 20px 0; background: #111; font-style: italic; }
+    .section-title { font-size: 1.4rem; border-left: 8px solid #00ff00; padding-left: 10px; margin: 40px 0 20px 0; text-transform: uppercase; }
+    
+    .skill-item { border: 2px solid #ffffff; padding: 12px; margin-bottom: 10px; }
+    .skill-label { font-weight: bold; color: #00ff00; text-transform: uppercase; }
+    
+    .projects-grid { display: flex; flex-direction: column; gap: 20px; }
+    .project-card { border: 2px solid #ffffff; padding: 20px; position: relative; }
+    .project-title { font-size: 1.2rem; text-transform: uppercase; margin-bottom: 8px; color: #00ff00; }
+    .project-desc { color: #ccc; margin-bottom: 12px; font-size: 0.9rem; }
+    .project-tech { font-weight: bold; font-size: 0.85rem; }
+    .project-link { color: #000000; background: #ffffff; text-decoration: none; font-weight: bold; padding: 4px 12px; display: inline-block; margin-top: 10px; }
+    .project-link:hover { background: #00ff00; }
+    
+    .contact-links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 2px solid #ffffff; padding: 10px; text-align: center; display: block; }
+    .contact-link:hover { border-color: #00ff00; color: #00ff00; }
+    .contact-label { display: block; font-weight: bold; margin-bottom: 4px; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div class="banner">
+      <h1>[PROFILE_NAME]</h1>
+      <span class="role-badge">CLASS: [PROFILE_TITLE]</span>
+      <p style="font-size: 0.95rem;">[PROFILE_BIO]</p>
+    </div>
+
+    [PROFILE_QUOTE]
+
+    <div class="section-title">Attributes (Skills)</div>
+    [SKILLS_CONTENT]
+
+    <div class="section-title">Quest Log (Projects)</div>
+    <div class="projects-grid">
+      [PROJECTS_CONTENT]
+    </div>
+
+    <div class="section-title">Save Point (Contact)</div>
+    <div class="contact-links">
+      [CONTACT_CONTENT]
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>

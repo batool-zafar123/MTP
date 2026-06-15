@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0b0c10; color: #c5c6c7; font-family: 'DM Mono', monospace; padding: 60px 20px; overflow-x: hidden; position: relative; min-height: 100vh; }
+    
+    .glow-aura { position: fixed; width: 600px; height: 600px; border-radius: 50%; background: radial-gradient(circle, rgba(102, 252, 241, 0.08) 0%, rgba(102,252,241,0) 70%); top: var(--y, 0px); left: var(--x, 0px); transform: translate(-50%, -50%); pointer-events: none; z-index: 1; }
+    
+    .container { max-width: 800px; margin: 0 auto; position: relative; z-index: 2; }
+    .card { background: rgba(31, 40, 51, 0.4); border: 1px solid rgba(102, 252, 241, 0.2); border-radius: 12px; padding: 32px; margin-bottom: 30px; backdrop-filter: blur(4px); }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 3rem; color: #ffffff; margin-bottom: 8px; }
+    .title-tag { color: #66fcf1; font-size: 1.1rem; text-transform: uppercase; margin-bottom: 24px; }
+    blockquote { border-left: 4px solid #66fcf1; padding-left: 16px; margin: 20px 0; color: #ffffff; font-style: italic; }
+    
+    .section-title { font-family: 'Syne', sans-serif; font-size: 1.8rem; color: #ffffff; margin-bottom: 24px; }
+    
+    .skill-item { display: flex; flex-direction: column; margin-bottom: 16px; }
+    .skill-label { color: #66fcf1; font-weight: bold; }
+    
+    .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .project-card { background: rgba(31, 40, 51, 0.6); border: 1px solid rgba(102, 252, 241, 0.1); border-radius: 8px; padding: 24px; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.25rem; color: #ffffff; margin-bottom: 8px; }
+    .project-tech { color: #66fcf1; font-size: 0.8rem; }
+    .project-link { text-decoration: none; color: #ffffff; font-weight: bold; border-bottom: 1px solid #66fcf1; display: inline-block; margin-top: 12px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 12px; }
+    .contact-link { text-decoration: none; color: #ffffff; border: 1px solid rgba(102, 252, 241, 0.2); padding: 14px; display: flex; justify-content: space-between; border-radius: 6px; }
+    .contact-link:hover { border-color: #66fcf1; }
+    .contact-label { color: #66fcf1; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="glow-aura" id="aura"></div>
+  
+  <div class="container">
+    <div class="card">
+      <h1>[PROFILE_NAME]</h1>
+      <div class="title-tag">[PROFILE_TITLE]</div>
+      <p style="line-height: 1.6;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Capabilities</h2>
+      [SKILLS_CONTENT]
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Built Repositories</h2>
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="section-title">Communications</h2>
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+
+  <script>
+    const aura = document.getElementById('aura');
+    document.addEventListener('mousemove', (e) => {
+      aura.style.setProperty('--x', e.clientX + 'px');
+      aura.style.setProperty('--y', e.clientY + 'px');
+    });
+  </script>
+</body>
+</html>

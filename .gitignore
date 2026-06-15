@@ -1,0 +1,12 @@
+# Ignore compiled C++ binaries
+backend/main.exe
+backend/main
+
+# Ignore cached input and generated outputs
+input.md
+output/index.html
+
+# Ignore python caches
+__pycache__/
+.venv/
+venv/

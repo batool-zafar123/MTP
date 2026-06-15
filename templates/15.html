@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>guest@portify: ~</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #06090f; color: #5af78e; font-family: 'DM Mono', monospace; padding: 40px 20px; line-height: 1.5; }
+    .terminal { max-width: 800px; margin: 0 auto; border: 1px solid #1a2333; background: #0a0e14; padding: 30px; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+    
+    .top-bar { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid #1a2333; padding-bottom: 12px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .red { background: #ff5f56; }
+    .yellow { background: #ffbd2e; }
+    .green { background: #27c93f; }
+    
+    .prompt { color: #f3f99d; margin-right: 8px; }
+    .cmd-line { display: flex; margin-bottom: 12px; }
+    .output-block { margin-bottom: 30px; padding-left: 10px; color: #ffffff; }
+    
+    h1 { font-size: 1.8rem; color: #5af78e; }
+    blockquote { border-left: 3px solid #f3f99d; padding-left: 15px; margin: 15px 0; color: #f3f99d; font-style: italic; }
+    
+    .skill-item { margin-bottom: 10px; }
+    .skill-label { color: #f3f99d; font-weight: bold; }
+    
+    .projects-grid { display: flex; flex-direction: column; gap: 20px; }
+    .project-card { border: 1px solid #1a2333; padding: 16px; background: #0c1017; }
+    .project-title { font-size: 1.1rem; color: #5af78e; margin-bottom: 6px; }
+    .project-tech { color: #f3f99d; font-size: 0.8rem; }
+    .project-link { color: #ffffff; font-weight: bold; text-decoration: none; border: 1px solid #5af78e; padding: 2px 8px; display: inline-block; margin-top: 10px; font-size: 0.75rem; }
+    
+    .contact-links { display: flex; flex-direction: column; gap: 8px; }
+    .contact-link { text-decoration: none; color: #ffffff; display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed #1a2333; }
+    .contact-label { color: #f3f99d; }
+    
+    .hidden-data { display: none; }
+  </style>
+</head>
+<body>
+  <div class="terminal">
+    <div class="top-bar">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
+      <span style="color:#556880; font-size:0.8rem; margin-left:10px;">guest@portify-node: ~</span>
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>cat profile.json</span>
+    </div>
+    <div class="output-block">
+      <h1>[PROFILE_NAME]</h1>
+      <p style="color:#8899a6; font-size:0.95rem; margin-top:8px;">// [PROFILE_TITLE]</p>
+      <p style="margin-top:12px;">[PROFILE_BIO]</p>
+      [PROFILE_QUOTE]
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>list --skills</span>
+    </div>
+    <div class="output-block" style="color: #5af78e;">
+      [SKILLS_CONTENT]
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>cat projects_log.txt</span>
+    </div>
+    <div class="output-block">
+      <div class="projects-grid">
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="cmd-line">
+      <span class="prompt">[guest@portify]$</span>
+      <span>finger dev</span>
+    </div>
+    <div class="output-block">
+      <div class="contact-links">
+        [CONTACT_CONTENT]
+      </div>
+    </div>
+  </div>
+
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>

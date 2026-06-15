@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[PROFILE_NAME]</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #050505; color: #e0e0e0; font-family: 'DM Sans', sans-serif; padding: 100px 20px; }
+    .timeline { position: relative; max-width: 800px; margin: 0 auto; padding: 40px 0; }
+    .timeline::after { content: ''; position: absolute; width: 2px; background: #4ef0c8; top: 0; bottom: 0; left: 50%; margin-left: -1px; }
+    
+    .container-node { padding: 10px 40px; position: relative; background-color: inherit; width: 50%; }
+    .container-node::after { content: ''; position: absolute; width: 16px; height: 16px; right: -8px; background-color: #050505; border: 4px solid #4ef0c8; top: 15px; border-radius: 50%; z-index: 1; }
+    
+    .left-node { left: 0; text-align: right; }
+    .right-node { left: 50%; }
+    .right-node::after { left: -8px; }
+    
+    .content-box { padding: 20px 30px; background: #111; border: 1px solid #222; border-radius: 6px; position: relative; }
+    
+    h1 { font-family: 'Syne', sans-serif; font-size: 2.5rem; color: #ffffff; margin-bottom: 8px; }
+    .subtitle { color: #4ef0c8; font-weight: 500; margin-bottom: 16px; }
+    blockquote { font-style: italic; color: #888; border-right: 3px solid #4ef0c8; padding-right: 15px; margin: 15px 0; }
+    .left-node blockquote { border-right: none; border-left: 3px solid #4ef0c8; padding-left: 15px; }
+
+    .skill-item { margin-bottom: 8px; }
+    .skill-label { font-weight: bold; color: #4ef0c8; }
+    
+    .project-card { margin-bottom: 20px; text-align: left; }
+    .project-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; color: #ffffff; }
+    .project-tech { font-family: monospace; color: #4ef0c8; font-size: 0.75rem; }
+    .project-link { color: #ffffff; text-decoration: none; font-size: 0.8rem; font-weight: bold; border-bottom: 1px solid #4ef0c8; display: inline-block; margin-top: 10px; }
+
+    .contact-links { display: flex; flex-direction: column; gap: 10px; }
+    .contact-link { color: #e0e0e0; text-decoration: none; border: 1px solid #222; padding: 10px; border-radius: 4px; display: block; }
+    .contact-link:hover { border-color: #4ef0c8; }
+    .contact-label { color: #4ef0c8; font-weight: bold; }
+    
+    .hidden-data { display: none; }
+    @media screen and (max-width: 600px) {
+      .timeline::after { left: 31px; }
+      .container-node { width: 100%; padding-left: 70px; padding-right: 25px; text-align: left !important; }
+      .container-node::after { left: 23px; }
+      .right-node { left: 0%; }
+      .left-node blockquote { border-left: 3px solid #4ef0c8; }
+    }
+  </style>
+</head>
+<body>
+  <div class="timeline">
+    <div class="container-node left-node">
+      <div class="content-box">
+        <h1>[PROFILE_NAME]</h1>
+        <p class="subtitle">[PROFILE_TITLE]</p>
+        <p>[PROFILE_BIO]</p>
+      </div>
+    </div>
+    
+    <div class="container-node right-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:10px;">Objective Quote</h3>
+        [PROFILE_QUOTE]
+      </div>
+    </div>
+
+    <div class="container-node left-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:15px;">Key Skills</h3>
+        [SKILLS_CONTENT]
+      </div>
+    </div>
+
+    <div class="container-node right-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:15px;">Works Completed</h3>
+        [PROJECTS_CONTENT]
+      </div>
+    </div>
+
+    <div class="container-node left-node">
+      <div class="content-box">
+        <h3 style="font-family:'Syne'; margin-bottom:15px;">Get Connected</h3>
+        <div class="contact-links">
+          [CONTACT_CONTENT]
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="hidden-data">
+    [SIDEBAR_PROJECTS_LIST]
+  </div>
+</body>
+</html>

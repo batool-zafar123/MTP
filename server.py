@@ -8,7 +8,8 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return send_file('frontend/frontend.htm')
+    # FIXED TYPO: Serve frontend.html instead of non-existent frontend.htm
+    return send_file('frontend/frontend.html')
 
 @app.route('/output/<path:filename>')
 def serve_output(filename):
@@ -18,19 +19,24 @@ def serve_output(filename):
 @app.route('/generate', methods=['POST'])
 def handle_generation():
     data = request.json
-    markdown_text = data['markdown']
+    markdown_text = data.get('markdown', '')
+    template_id = data.get('template', '1') # Fallback to template 1
     
     # Save markdown to input.md
     with open('input.md', 'w', encoding='utf-8') as file:
         file.write(markdown_text)
     
-    # Run your C++ program
+    # Run dynamic C++ program with dynamic template identifier
     try:
-        subprocess.run(['./backend/main.exe'], check=True)
+        # Check running OS context (add .exe only if on windows context)
+        exe_path = './backend/main.exe' if os.name == 'nt' else './backend/main'
         
-        return {"status": "success", "message": "Portfolio generated!"}, 200
+        # Pass template_id as a command line string parameter
+        subprocess.run([exe_path, str(template_id)], check=True)
+        
+        return {"status": "success", "message": f"Portfolio generated using Template {template_id}!"}, 200
     except FileNotFoundError:
-        return {"status": "error", "message": "C++ program not found"}, 500
+        return {"status": "error", "message": "C++ program executable not found. Make sure to compile backend/main.cpp first!"}, 500
     except subprocess.CalledProcessError:
         return {
             "status": "error", 
@@ -40,4 +46,5 @@ def handle_generation():
         return {"status": "error", "message": str(e)}, 500
 
 if __name__ == '__main__':
-    app.run(port=8000, debug=False)
+    port = int(os.environ.get('PORT', 8000))
+    app.run(host='0.0.0.0', port=port, debug=False)
