@@ -16,6 +16,11 @@ def serve_output(filename):
     """Serve files from the output directory"""
     return send_from_directory('output', filename)
 
+@app.route('/<path:filename>')
+def serve_frontend(filename):
+    """Serve files from the frontend directory"""
+    return send_from_directory('frontend', filename)
+
 @app.route('/generate', methods=['POST'])
 def handle_generation():
     data = request.json

@@ -734,7 +734,7 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
     
     showToast('Running...', 2000);
     
-    fetch('http://localhost:8000/generate', {
+    fetch('/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markdown, template: templateId })
@@ -745,7 +745,7 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
         showToast('✓ Preview updated', 2000);
         previewDot.classList.add('active'); // mark as current
         const timestamp = new Date().getTime();
-        previewIframe.src = `http://localhost:8000/output/index.html?t=${timestamp}`;
+        previewIframe.src = `/output/index.html?t=${timestamp}`;
       } else {
         showToast('✗ ' + (data.message || 'Run failed'), 2000);
       }
@@ -763,7 +763,7 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
     
     showToast('Generating...', 2000);
     
-    fetch('http://localhost:8000/generate', {
+    fetch('/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markdown, template: templateId })
@@ -774,7 +774,7 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
         showToast('✓ Opening in new tab...', 2000);
         // Open in new tab with cache-busting timestamp
         const timestamp = new Date().getTime();
-        window.open(`http://localhost:8000/output/index.html?t=${timestamp}`, '_blank');
+        window.open(`/output/index.html?t=${timestamp}`, '_blank');
       } else {
         showToast('✗ ' + (data.message || 'Generation failed'), 2000);
       }
@@ -810,8 +810,9 @@ LinkedIn: [linkedin.com/in/yourusername](https://linkedin.com/in/yourusername)
     showToast('Loading code...', 1000);
     
     // Fetch the index.html from server
+    const host = window.location.origin;
     const timestamp = new Date().getTime();
-    fetch(`http://localhost:8000/output/index.html?t=${timestamp}`)
+    fetch(`${host}/output/index.html?t=${timestamp}`)
       .then(response => {
         if (!response.ok) {
           throw new Error('Code has not been run/generated yet, or server error.');
