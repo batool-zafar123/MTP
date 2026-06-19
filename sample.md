@@ -47,5 +47,5 @@ Link: [View Source](https://drive.google.com/file/d/1S5GAwRwdO-gkH8-whIaoaMR_BJ1
 # CONTACT
 Email: [mailto:muhammadhashimnaeem16@gmail.com](mailto:muhammadhashimnaeem16@gmail.com)<br>
 GitHub: [https://github.com/Muhammad-Hashim-16](https://github.com/Muhammad-Hashim-16)<br>
-LinkedIn: [https://www.linkedin.com/in/muhammad-hashim-naeem-053b6a271](https://www.linkedin.com/in/muhammad-hashim-naeem-053b6a271)
+LinkedIn: [https://www.linkedin.com/in/muhammad-hashim-naeem](https://www.linkedin.com/in/muhammad-hashim-naeem)
 
